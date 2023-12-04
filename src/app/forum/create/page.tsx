@@ -1,7 +1,7 @@
 "use client";
 
 
-import { Welcome } from '@/components';
+import * as components from '@/components';
 import Image from 'next/image'
 
 
@@ -9,7 +9,7 @@ export default function CreateForum() {
   
   return (
     <main className="overflow-hidden">
-      <Welcome></Welcome>
+      <components.CreateForum></components.CreateForum>
     </main>
   )
 }

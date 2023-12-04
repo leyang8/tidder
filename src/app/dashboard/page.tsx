@@ -1,7 +1,5 @@
 "use client";
-
-
-import { Welcome } from '@/components';
+import * as components from '@/components';
 import Image from 'next/image'
 
 
@@ -9,7 +7,7 @@ export default function Dashboard() {
   
   return (
     <main className="overflow-hidden">
-      <Welcome></Welcome>
+      <components.Dashboard></components.Dashboard>
     </main>
   )
 }
