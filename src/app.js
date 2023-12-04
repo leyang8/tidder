@@ -11,34 +11,34 @@ const pool = createPool({
     port: 3306,
     user: 'root',
     password: 'rootuser',
-    database: 'sys',
+    database: 'new_schema',
     connectionLimit: 10
 
 })
 
-pool.query('SELECT * FROM User', [], (err, result, fields) => {
-    if(err){
-        return console.log(err)
-    }
-    return console.log(result)
-})
+
 // Code to kill port: lsof -ti:5002 | xargs kill -9
  
 const app = express();
 
 app.use(cors());
 
-app.use(express.json());
 
-app.route('api/users/:user')
-    .get(async (req, res) => {
+
+app.route('/api/secure/forums')
+    .get((req, res) => {
+        const results = [];
         
-        pool.query(`SELECT * FROM User`, [], (err, result, fields) => {
-            if(err){
-                return console.log(err)
+        pool.query('SELECT * FROM Forum', [], (err, result, fields) => {
+            if (err) {
+                return res.status(404).json({ error: 'No forums in the database' });
+            } else {
+                // Assuming result is an array, you may need to adjust accordingly
+                results.push(...result);
+                res.json(results);
             }
-            return console.log(result)
-        })
-        
+        });
+    });
 
-    })
+
+app.listen(5002, () => console.log('Listening on port 5002'));
