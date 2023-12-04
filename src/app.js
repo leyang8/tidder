@@ -39,5 +39,6 @@ app.route('api/users/:user')
             }
             return console.log(result)
         })
+        
 
     })
