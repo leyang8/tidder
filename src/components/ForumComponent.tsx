@@ -18,7 +18,7 @@ const ForumComponent = ({forumData}: ForumComponentProps) => {
             {forumData.title}
         </h5>
         <p>Created on: {new Date(forumData.creationDate).toLocaleString()}</p>
-        <p>Creeated by user: {forumData.creatorID}</p>
+        <p>Created by user: {forumData.creatorID}</p>
 
         <h5 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
             Comments:

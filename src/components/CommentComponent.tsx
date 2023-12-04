@@ -17,7 +17,7 @@ const CommentComponent = ({commentData}: CommentComponentProps) => {
             {commentData.creatorID}
         </h5>
         <p>{commentData.content}</p>
-
+        
         <Accordion>
             <Accordion.Panel>
                 <Accordion.Title>
