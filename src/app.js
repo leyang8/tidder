@@ -16,12 +16,12 @@ const pool = createPool({
 
 })
 
-// pool.query('SELECT * FROM User', [], (err, result, fields) => {
-//     if(err){
-//         return console.log(err)
-//     }
-//     return console.log(result)
-// })
+pool.query('SELECT * FROM User', [], (err, result, fields) => {
+    if(err){
+        return console.log(err)
+    }
+    return console.log(result)
+})
 // Code to kill port: lsof -ti:5002 | xargs kill -9
  
 const app = express();
@@ -30,3 +30,14 @@ app.use(cors());
 
 app.use(express.json());
 
+app.route('api/users/:user')
+    .get(async (req, res) => {
+        
+        pool.query(`SELECT * FROM User`, [], (err, result, fields) => {
+            if(err){
+                return console.log(err)
+            }
+            return console.log(result)
+        })
+
+    })
