@@ -6,6 +6,30 @@ const Dashboard = () => {
     const [forums, setForums] = useState([]);
 
     async function fetchForums(){
+        const url = `http://localhost:5002/api/secure/forums`;
+        fetch(url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(responseData => {
+                console.log('GET successful:', responseData);
+                setForums(responseData)
+
+                
+                
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                
+            });
         
     }
     useEffect(() => {
@@ -21,8 +45,8 @@ const Dashboard = () => {
             Welcome to Tidder! View forums below!
         </p>
         
-        {forums.map((result, index) => (
-            <div key={index} className="transition-transform transform hover:scale-105">
+        {forums.map((result) => (
+            <div className="mt-10 mb-10">
                  <ForumComponent forumData={result}/>
                  </div>
         ))} 
