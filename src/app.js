@@ -15,67 +15,93 @@ const pool = createPool({
 
 
 
-//Profile Page Queries
+// //Profile Page Queries
 
-//FOllowers list for profile page
-//Userid has to be specified in Sql IN (**)
-//followeeUserID = userID
-pool.query(`SELECT DISTINCT followerUserID FROM Followship WHERE followeeUserID = ()`, [], (err, result, fields) => {
-        if(err){
-        return console.log(err)
-    }
-    return result
-  })
+// //FOllowers list for profile page
+// //Userid has to be specified in Sql IN (**)
+// //followeeUserID = userID
+// pool.query(`SELECT DISTINCT followerUserID FROM Followship WHERE followeeUserID = ()`, [], (err, result, fields) => {
+//         if(err){
+//         return console.log(err)
+//     }
+//     return result
+//   })
 
-//Following List for profile page
-//Current UserId has to be called  
-//FollowerUserID = UserID
-pool.query(`SELECT DISTINCT followeeUserID FROM Followship WHERE followerUserID = ()`, [], (err, result, fields) => {
-    if(err){
-    return console.log(err)
-}
-return result
-})
+// //Following List for profile page
+// //Current UserId has to be called  
+// //FollowerUserID = UserID
+// pool.query(`SELECT DISTINCT followeeUserID FROM Followship WHERE followerUserID = ()`, [], (err, result, fields) => {
+//     if(err){
+//     return console.log(err)
+// }
+// return result
+// })
 
-//Followship Notification Query 
-//receiverID = UserID
-pool.query(`SELECT DISTINCT followerUserID, timestamp FROM Followship_Notification WHERE receiverID = ()`, [], (err, result, fields) => {
-    if(err){
-    return console.log(err)
-}
-return result
-})
+// //Followship Notification Query 
+// //receiverID = UserID
+// pool.query(`SELECT DISTINCT followerUserID, timestamp FROM Followship_Notification WHERE receiverID = ()`, [], (err, result, fields) => {
+//     if(err){
+//     return console.log(err)
+// }
+// return result
+// })
 
-//Reaction Notification
-//creatorID = currentUserID
-pool.query(`SELECT R.userID FROM Reaction R JOIN Comment C ON R.commentID = C.commentID WHERE R.isLike = TRUE AND C.creatorID = :currentUserID;`, [], (err, result, fields) => {
-    if(err){
-    return console.log(err)
-}
-return result
-})
+// //Reaction Notification
+// //creatorID = currentUserID
+// pool.query(`SELECT R.userID FROM Reaction R JOIN Comment C ON R.commentID = C.commentID WHERE R.isLike = TRUE AND C.creatorID = :currentUserID;`, [], (err, result, fields) => {
+//     if(err){
+//     return console.log(err)
+// }
+// return result
+// })
 
-//List of names of all the forums UserId has created
-//Current Users userId is not specified in the SQL Query
-pool.query(`SELECT DISTINCT title, creationDate FROM Forum WHERE creatorID = ()`, [], (err, result, fields) => {
-    if(err){
-    return console.log(err)
-}
-return result
-})
+// //List of names of all the forums UserId has created
+// //Current Users userId is not specified in the SQL Query
+// pool.query(`SELECT DISTINCT title, creationDate FROM Forum WHERE creatorID = ()`, [], (err, result, fields) => {
+//     if(err){
+//     return console.log(err)
+// }
+// return result
+// })
 
-pool.query('SELECT * FROM User', [], (err, result, fields) => {
-    if(err){
-        return console.log(err)
-    }
-    return console.log(result)
-})
+// pool.query('SELECT * FROM User', [], (err, result, fields) => {
+//     if(err){
+//         return console.log(err)
+//     }
+//     return console.log(result)
+// })
 
 // Code to kill port: lsof -ti:5002 | xargs kill -9
 
 const app = express();
 app.use(express.json()); // for parsing application/json
 app.use(cors());
+
+
+app.route('/api/secure/comments/reply')
+    .post((req, res) => {
+        const forumID = req.body.forumID;
+        const parentCommentID = req.body.parentCommentID;
+        const content = req.body.content;
+        const creationDate = new Date(); // Set to current date and time
+        const creatorID = req.body.creatorID;
+
+        // Assuming you have a MySQL connection pool named 'pool'
+        pool.query(
+            'INSERT INTO Comment (parentCommentID, content, creationDate, creatorID, forumID) VALUES (?, ?, ?, ?, ?)',
+            [parentCommentID, content, creationDate, creatorID, forumID],
+            (err, result, fields) => {
+                if (err) {
+                    console.error('Error inserting comment:', err);
+                    return res.status(500).json({ error: 'Failed to insert comment' });
+                }
+
+                // Assuming the commentID is an auto-increment field
+                const commentID = result.insertId;
+                res.json({ commentID, message: 'Comment inserted successfully' });
+            }
+        );
+    });
 
 
 // Get username off of userID

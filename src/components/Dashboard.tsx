@@ -90,7 +90,7 @@ const Dashboard = () => {
         <p>
             Welcome to Tidder! View or create forums below!
         </p>
-        <Button className="transition-transform transform hover:scale-105" gradientDuoTone="purpleToPink" href="/forum/create">Surprise me!</Button>
+        <Button className="transition-transform transform hover:scale-105 max-w-xl" gradientDuoTone="purpleToPink" href="/forum/create">Create Forum</Button>
 
         <form className="flex max-w-md flex-col gap-4 mt-10" onSubmit={handleSubmit}>
                 <div className="mb-2 block">
