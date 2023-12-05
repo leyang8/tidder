@@ -71,22 +71,16 @@ const CommentComponent = ({commentData}: CommentComponentProps) => {
         </h5>
         <p className='mb-10'>{commentData.content}</p>
         
-        <Accordion collapseAll>
-            <Accordion.Panel>
-                    <Accordion.Title>View Replies</Accordion.Title>
-                    <Accordion.Content>
-                        <div className='results' id='results'>
+        <Card>
+            <div className='results' id='results'>
                         {children.map((result, index) => (
                             <div className="mt-5" key = {index}>
                                 <CommentComponent commentData={result}/>
                             </div>
                         ))}     
                         </div>
-                    </Accordion.Content>
-                </Accordion.Panel>
-                
-                
-            </Accordion>
+        </Card>
+                    
     </Card>
   )
 }
