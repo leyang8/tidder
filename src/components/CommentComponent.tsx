@@ -1,3 +1,4 @@
+"use client"
 import { CommentComponentProps } from '@/types'
 import { Accordion, Card } from 'flowbite-react';
 
@@ -23,8 +24,6 @@ const CommentComponent = ({commentData}: CommentComponentProps) => {
             .then(responseData => {
                 console.log('GET successful:', responseData);
                 setAuthorName(responseData)
-
-                
                 
             })
             .catch(error => {
@@ -77,8 +76,8 @@ const CommentComponent = ({commentData}: CommentComponentProps) => {
                     <Accordion.Title>View Replies</Accordion.Title>
                     <Accordion.Content>
                         <div className='results' id='results'>
-                        {children.map((result) => (
-                            <div className="mt-5">
+                        {children.map((result, index) => (
+                            <div className="mt-5" key = {index}>
                                 <CommentComponent commentData={result}/>
                             </div>
                         ))}     
