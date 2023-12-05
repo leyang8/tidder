@@ -8,8 +8,8 @@ const pool = createPool({
   host: "localhost",
   port: 3306,
   user: "root",
-  password: "rootuser",
-  database: "new_schema",
+  password: "20030702OnOn!",
+  database: "se3309_project",
   connectionLimit: 10,
 });
 
@@ -149,9 +149,9 @@ app.post("/api/register", (req, res) => {
     [],
     (err, result, fields) => {
       if (err) {
-        return res.status(500).send(err);
+        return res.status(409).json({ message: "Email already been use" });
       }
-      return res.status(200).send("Account Created, Please Login");
+      return res.status(200).json({ message: "Account Created, Please Login" });
     }
   );
 });

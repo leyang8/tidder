@@ -30,7 +30,7 @@ const Register = () => {
     phoneNumber: phoneNumber,
   };
 
-  const fetchURL = `http://localhost:5000/api/register`;
+  const fetchURL = `http://localhost:5002/api/register`;
 
   function createAccount() {
     if (email && username && password && firstName && lastName && phoneNumber) {
@@ -58,7 +58,7 @@ const Register = () => {
       body: JSON.stringify(postData),
     })
       .then((res) => res.json())
-      .then((data) => alert(JSON.parse(data)))
+      .then((data) => alert(data.message))
       .catch((err) => alert(err));
   };
 
@@ -71,7 +71,7 @@ const Register = () => {
               <h2>Create Account</h2>
               <div className="inputbox">
                 <input
-                  type="text"
+                  type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
