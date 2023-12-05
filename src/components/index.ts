@@ -1,5 +1,6 @@
 import CreateForum from "./CreateForum";
 import Dashboard from "./Dashboard";
+import ForumComponent from "./ForumComponent";
 import Login from "./Login";
 import Profile from "./Profile";
 import Register from "./Register";
@@ -14,5 +15,6 @@ export {
     Profile,
     Register,
     ViewForum,
-    CreateForum
+    CreateForum,
+    ForumComponent
 }
