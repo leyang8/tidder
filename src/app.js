@@ -8,8 +8,8 @@ const pool = createPool({
   host: "localhost",
   port: 3306,
   user: "root",
-  password: "20030702OnOn!",
-  database: "se3309_project",
+  password: "rootuser",
+  database: "new_schema",
   connectionLimit: 10,
 });
 
