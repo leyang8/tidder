@@ -32,7 +32,7 @@ const Login = () => {
       const data = await response.json();
       const currentUser = data.user
       // Handle successful login (e.g., redirect, store user data)
-      Cookies.set("currentUser", currentUser.username)
+      Cookies.set("currentUserID", currentUser.userID)
       routeToDashboard()
     } catch (error: any) {
       alert('Login error: ' + error.message);

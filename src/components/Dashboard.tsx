@@ -66,16 +66,42 @@ const Dashboard = () => {
         
     }
 
+    async function fetchUserName(userID: any){
+        const url = `http://localhost:5002/api/secure/users/${userID}`;
+        fetch(url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(responseData => {
+                console.log('GET successful:', responseData);
+                setCurrentUsername(responseData)
+                
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                
+            });
+
+    }
     const onLogout = () => {
-        Cookies.remove('currentUser');
+        Cookies.remove('currentUserID');
         window.location.href = '/'
     }
+
     useEffect(() => {
         // Get the username from cookies
-        const current = Cookies.get("currentUser");
-        if (current) {
-            setCurrentUsername(current)
-        }
+        const currentUserID = Cookies.get("currentUserID");
+        if (currentUserID) {
+            fetchUserName(currentUserID)
+        }        
         fetchForums();
     }, [])
   return (
@@ -88,8 +114,9 @@ const Dashboard = () => {
             <button id='logoutBtn' onClick={onLogout}>Logout</button>
         </div>
         <p>
-            Welcome to Tidder! View forums below!
+            Welcome to Tidder! View or create forums below!
         </p>
+        <Button className="transition-transform transform hover:scale-105 max-w-xl" gradientDuoTone="purpleToPink" href="/forum/create">Create Forum</Button>
 
         <form className="flex max-w-md flex-col gap-4 mt-10" onSubmit={handleSubmit}>
                 <div className="mb-2 block">
