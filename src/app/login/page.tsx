@@ -3,6 +3,7 @@
 
 import * as components from '@/components';
 import Image from 'next/image'
+import Cookies from 'js-cookie';
 
 
 export default function Login() {
