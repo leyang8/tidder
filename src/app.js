@@ -8,8 +8,8 @@ const pool = createPool({
   host: "localhost",
   port: 3306,
   user: "root",
-  password: "20030702OnOn!",
-  database: "se3309_project",
+  password: "rootuser",
+  database: "new_schema",
   connectionLimit: 10,
 });
 
@@ -42,10 +42,30 @@ app.route("/api/secure/forums").get((req, res) => {
     }
   );
 });
+// Get username off of userID
+app.route("/api/secure/users/:id").get((req, res) => {
+  const userID = req.params.id;
+  var usernameResult = "";
+
+  pool.query(
+    "SELECT * FROM User WHERE userID = ?",
+    [userID],
+    (err, result, fields) => {
+      if (err) {
+        return res.status(404).json({ error: "No user in the database" });
+      } else {
+        // Assuming result is an array, you may need to adjust accordingly
+        usernameResult = result[0].username;
+        console.log(result);
+        res.json(usernameResult);
+      }
+    }
+  );
+});
+
 app.route("/api/secure/forums/:forumID/comments").get((req, res) => {
   const results = [];
   const forumID = req.params.forumID;
-
   pool.query(
     `SELECT * FROM Comment WHERE forumID = ?`,
     [forumID],
