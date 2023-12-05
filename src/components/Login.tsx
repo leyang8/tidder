@@ -1,6 +1,42 @@
-import React from "react";
+import React, { FormEvent, useState } from "react";
 
 const Login = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  let currentUser;
+
+  const onLoginClick = async (e: FormEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    await loginHandler();
+  };
+
+  const loginHandler = async () => {
+    try { 
+      const response = await fetch('http://localhost:5002/api/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({email, password})
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        alert(errorData.message || 'Login failed, please try again!');
+        return;
+      }
+
+      const data = await response.json();
+      currentUser = data.user;
+      console.log(currentUser);
+      // Handle successful login (e.g., redirect, store user data)
+    } catch (error: any) {
+      alert('Login error: ' + error.message);
+      // Handle login error (e.g., show error message)
+    }
+};
+
+
   return (
     <>
       <section>
@@ -9,23 +45,22 @@ const Login = () => {
             <form action="">
               <h2>Login</h2>
               <div className="inputbox">
-                <input type="email" required />
-                <label htmlFor="">Email</label>
+                <input 
+                type="email"
+                onChange={(e) => {setEmail(e.target.value)}}
+                required />
+                <label>Email</label>
               </div>
               <div className="inputbox">
-                <input type="password" required />
-                <label htmlFor="">Password</label>
+                <input type="password"
+                onChange={(e) => {setPassword(e.target.value)}}
+                required />
+                <label>Password</label>
               </div>
-              <div className="forget">
-                <label htmlFor="">
-                  <input type="checkbox" />
-                  Remember Me <a href="#">Forget Password</a>
-                </label>
-              </div>
-              <button>Log in</button>
+              <button onClick={onLoginClick}>Log in</button>
               <div className="register">
                 <p>
-                  Don't have a account <a href="#">Register</a>
+                  Don't have an account? <a href="/register">Register</a>
                 </p>
               </div>
             </form>

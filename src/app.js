@@ -10,8 +10,8 @@ const pool = createPool({
     host: 'localhost',
     port: 3306,
     user: 'root',
-    password: 'rootuser',
-    database: 'new_schema',
+    password: 'Xingleyanglili12.',
+    database: 'se3309',
     connectionLimit: 10
 
 })
@@ -20,7 +20,7 @@ const pool = createPool({
 // Code to kill port: lsof -ti:5002 | xargs kill -9
  
 const app = express();
-
+app.use(express.json()); // for parsing application/json
 app.use(cors());
 
 
@@ -69,5 +69,28 @@ app.route('/api/secure/forums')
             }
         });
     });
+
+// POST route for login
+app.post('/api/login', (req, res) => {
+    const { email, password } = req.body;
+    pool.query('SELECT * FROM User WHERE email = ?', [email], async (err, results) => {
+        if (err) {
+            return res.status(500).json({ message: 'Server error' });
+        }
+        if (results.length === 0) {
+            return res.status(401).json({ message: 'Incorrect email or password, please try again!' });
+        }
+        const user = results[0];
+
+        const isMatch = password === user.password; // Assuming plaintext comparison for simplicity
+        if (!isMatch) {
+            return res.status(401).json({ message: 'Incorrect email or password, please try again!' });
+        }
+
+        // Passwords match, login successful
+        res.json({ user });
+    });
+});
+
 
 app.listen(5002, () => console.log('Listening on port 5002'));
