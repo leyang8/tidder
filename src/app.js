@@ -293,3 +293,27 @@ app.post("/api/register", (req, res) => {
     }
   );
 });
+
+
+app.post("/api/createForum", (req, res) => {
+    const { title, creationDate, creatorID } = req.body;
+
+    // Select a random adminID between 1 and 5
+    const randomAdmin = Math.floor(Math.random() * 5) + 1; 
+
+    // Using prepared statement for security
+    const query = 'INSERT INTO Forum (title, creationDate, creatorID, adminID) VALUES (?, ?, ?, ?)';
+    const values = [title, creationDate, creatorID, randomAdmin];
+
+    pool.query(query, values, (err, result, fields) => {
+        if (err) {
+            // Return a more appropriate error message
+            console.error(err); // Log the error for debugging
+            return res.status(500).json({ message: "An error occurred while creating the forum." });
+        }
+        // Success message
+        return res.status(200).json({ message: "Forum created successfully." });
+    });
+});
+
+
