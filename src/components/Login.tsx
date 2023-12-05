@@ -1,10 +1,13 @@
 import React, { FormEvent, useState } from "react";
+import Cookies from "js-cookie";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  let currentUser;
 
+  const routeToDashboard = () => {
+    window.location.href = "/dashboard";
+  }
   const onLoginClick = async (e: FormEvent<HTMLButtonElement>) => {
     e.preventDefault();
     await loginHandler();
@@ -27,9 +30,10 @@ const Login = () => {
       }
 
       const data = await response.json();
-      currentUser = data.user;
-      console.log(currentUser);
+      const currentUser = data.user
       // Handle successful login (e.g., redirect, store user data)
+      Cookies.set("currentUser", currentUser.username)
+      routeToDashboard()
     } catch (error: any) {
       alert('Login error: ' + error.message);
       // Handle login error (e.g., show error message)
