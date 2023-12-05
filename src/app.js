@@ -18,13 +18,36 @@ const app = express();
 app.use(express.json()); // for parsing application/json
 app.use(cors());
 
+app.route('/api/secure/comments/new')
+    .post((req, res) => {
+        const forumID = req.body.forumID;
+        const content = req.body.content;
+        const creationDate = Math.floor(new Date().getTime() / 1000);
+        const creatorID = req.body.creatorID;
+
+        // Assuming you have a MySQL connection pool named 'pool'
+        pool.query(
+            'INSERT INTO Comment (content, creationDate, creatorID, forumID) VALUES (?, ?, ?, ?)',
+            [content, creationDate, creatorID, forumID],
+            (err, result, fields) => {
+                if (err) {
+                    console.error('Error inserting comment:', err);
+                    return res.status(500).json({ error: 'Failed to insert comment' });
+                }
+
+                // Assuming the commentID is an auto-increment field
+                const commentID = result.insertId;
+                res.json({ commentID, message: 'Comment inserted successfully' });
+            }
+        );
+    });
 
 app.route('/api/secure/comments/reply')
     .post((req, res) => {
         const forumID = req.body.forumID;
         const parentCommentID = req.body.parentCommentID;
         const content = req.body.content;
-        const creationDate = new Date(); // Set to current date and time
+        const creationDate = Math.floor(new Date().getTime() / 1000);
         const creatorID = req.body.creatorID;
 
         // Assuming you have a MySQL connection pool named 'pool'
