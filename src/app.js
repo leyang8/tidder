@@ -16,6 +16,65 @@ const pool = createPool({
 
 })
 
+
+//Profile Page Queries
+
+//FOllowers list for profile page
+//Userid has to be specified in Sql IN (**)
+//followeeUserID = userID
+pool.query(`SELECT DISTINCT followerUserID FROM Followship WHERE followeeUserID = ()`, [], (err, result, fields) => {
+        if(err){
+        return console.log(err)
+    }
+    return result
+  })
+
+//Following List for profile page
+//Current UserId has to be called  
+//FollowerUserID = UserID
+pool.query(`SELECT DISTINCT followeeUserID FROM Followship WHERE followerUserID = ()`, [], (err, result, fields) => {
+    if(err){
+    return console.log(err)
+}
+return result
+})
+
+//Followship Notification Query 
+//receiverID = UserID
+pool.query(`SELECT DISTINCT followerUserID, timestamp FROM Followship_Notification WHERE receiverID = ()`, [], (err, result, fields) => {
+    if(err){
+    return console.log(err)
+}
+return result
+})
+
+//Reaction Notification
+//creatorID = currentUserID
+pool.query(`SELECT R.userID FROM Reaction R JOIN Comment C ON R.commentID = C.commentID WHERE R.isLike = TRUE AND C.creatorID = :currentUserID;`, [], (err, result, fields) => {
+    if(err){
+    return console.log(err)
+}
+return result
+})
+
+//List of names of all the forums UserId has created
+//Current Users userId is not specified in the SQL Query
+pool.query(`SELECT DISTINCT title, creationDate FROM Forum WHERE creatorID = ()`, [], (err, result, fields) => {
+    if(err){
+    return console.log(err)
+}
+return result
+})
+
+
+
+
+
+
+
+
+
+
 pool.query('SELECT * FROM User', [], (err, result, fields) => {
     if(err){
         return console.log(err)
