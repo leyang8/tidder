@@ -1,24 +1,26 @@
-const express = require('express');
-const fs = require('fs');
-const cors = require('cors');
+const express = require("express");
+const fs = require("fs");
+const cors = require("cors");
 
-const {
-    createPool
-} = require('mysql2')
+const { createPool } = require("mysql2");
 
 const pool = createPool({
-    host: 'localhost',
-    port: 3306,
-    user: 'root',
-    password: 'rootuser',
-    database: 'new_schema',
-    connectionLimit: 10
+  host: "localhost",
+  port: 3306,
+  user: "root",
+  password: "rootuser",
+  database: "new_schema",
+  connectionLimit: 10,
+});
 
-})
-
-
+// pool.query("SELECT * FROM User", [], (err, result, fields) => {
+//   if (err) {
+//     return console.log(err);
+//   }
+//   return console.log(result);
+// });
 // Code to kill port: lsof -ti:5002 | xargs kill -9
- 
+
 const app = express();
 app.use(express.json()); // for parsing application/json
 app.use(cors());
@@ -118,26 +120,58 @@ app.route('/api/secure/forums/:forumID/comments')
     });
 
 // POST route for login
-app.post('/api/login', (req, res) => {
-    const { email, password } = req.body;
-    pool.query('SELECT * FROM User WHERE email = ?', [email], async (err, results) => {
-        if (err) {
-            return res.status(500).json({ message: 'Server error' });
-        }
-        if (results.length === 0) {
-            return res.status(401).json({ message: 'Incorrect email or password, please try again!' });
-        }
-        const user = results[0];
+app.post("/api/login", (req, res) => {
+  const { email, password } = req.body;
+  pool.query(
+    "SELECT * FROM User WHERE email = ?",
+    [email],
+    async (err, results) => {
+      if (err) {
+        return res.status(500).json({ message: "Server error" });
+      }
+      if (results.length === 0) {
+        return res
+          .status(401)
+          .json({ message: "Incorrect email or password, please try again!" });
+      }
+      const user = results[0];
 
-        const isMatch = password === user.password; // Assuming plaintext comparison for simplicity
-        if (!isMatch) {
-            return res.status(401).json({ message: 'Incorrect email or password, please try again!' });
-        }
+      const isMatch = password === user.password; // Assuming plaintext comparison for simplicity
+      if (!isMatch) {
+        return res
+          .status(401)
+          .json({ message: "Incorrect email or password, please try again!" });
+      }
 
-        // Passwords match, login successful
-        res.json({ user });
-    });
+      // Passwords match, login successful
+      res.json({ user });
+    }
+  );
 });
 
+app.listen(5002, () => console.log("Listening on port 5002"));
 
-app.listen(5002, () => console.log('Listening on port 5002'));
+app.post("/api/register", (req, res) => {
+  const {
+    email,
+    username,
+    password,
+    firstname,
+    middlename,
+    lastname,
+    phoneNumber,
+  } = req.body;
+
+  const randomAdmin = Math.floor(Math.random() * 5) + 1;
+
+  pool.query(
+    `INSERT INTO User (email, username, password, firstname, middlename, lastname, phoneNumber, adminID) VALUES ('${email}', '${username}', '${password}', '${firstname}', '${middlename}', '${lastname}', '${phoneNumber}', '${randomAdmin}' )`,
+    [],
+    (err, result, fields) => {
+      if (err) {
+        return res.status(500).send(err);
+      }
+      return res.status(200).send("Account Created, Please Login");
+    }
+  );
+});
