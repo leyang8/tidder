@@ -25,79 +25,99 @@ const app = express();
 app.use(express.json()); // for parsing application/json
 app.use(cors());
 
-app.route("/api/secure/forums").get((req, res) => {
-  const results = [];
 
-  pool.query(
-    "SELECT * FROM Forum ORDER BY RAND() LIMIT 6",
-    [],
-    (err, result, fields) => {
-      if (err) {
-        return res.status(404).json({ error: "No forums in the database" });
-      } else {
-        // Assuming result is an array, you may need to adjust accordingly
-        results.push(...result);
-        res.json(results);
-      }
-    }
-  );
-});
 // Get username off of userID
-app.route("/api/secure/users/:id").get((req, res) => {
-  const userID = req.params.id;
-  var usernameResult = "";
+app.route('/api/secure/users/:id')
+    .get((req, res) => {
+        const userID = req.params.id
+        var usernameResult = ''
+        
+        
+        pool.query('SELECT * FROM User WHERE userID = ?', [userID], (err, result, fields) => {
+            if (err) {
+                return res.status(404).json({ error: 'No user in the database' });
+            } else {
+                // Assuming result is an array, you may need to adjust accordingly
+                usernameResult = result[0].username
+                console.log(result)
+                res.json(usernameResult);
+            }
+        });
+    });
 
-  pool.query(
-    "SELECT * FROM User WHERE userID = ?",
-    [userID],
-    (err, result, fields) => {
-      if (err) {
-        return res.status(404).json({ error: "No user in the database" });
-      } else {
-        // Assuming result is an array, you may need to adjust accordingly
-        usernameResult = result[0].username;
-        console.log(result);
-        res.json(usernameResult);
-      }
-    }
-  );
-});
+app.route('/api/secure/forums/creator/:username')
+    .get((req, res) => {
+        const username = req.params.username;
+        const results = [];
+        
+        // Use a JOIN to select forums based on the matching creatorID and username
+        const sql = `
+            SELECT Forum.*
+            FROM Forum
+            INNER JOIN User ON Forum.creatorID = User.userID
+            WHERE User.username LIKE ?
+            ORDER BY RAND()
+            LIMIT 6
+        `;
 
-app.route("/api/secure/forums/:forumID/comments").get((req, res) => {
-  const results = [];
-  const forumID = req.params.forumID;
-  pool.query(
-    `SELECT * FROM Comment WHERE forumID = ?`,
-    [forumID],
-    (err, result, fields) => {
-      if (err) {
-        return res.status(404).json({ error: "No forums in the database" });
-      } else {
-        // Assuming result is an array, you may need to adjust accordingly
-        results.push(...result);
-        res.json(results);
-      }
-    }
-  );
-});
-app.route("/api/secure/comments/:commentID/children").get((req, res) => {
-  const results = [];
-  const commentID = req.params.commentID;
+        pool.query(sql, [`%${username}%`], (err, result, fields) => {
+            if (err) {
+                return res.status(500).json({ error: 'Internal server error' });
+            } else {
+                // Assuming result is an array, you may need to adjust accordingly
+                console.log(result)
+                results.push(...result);
+                res.json(results);
+            }
+        });
+    });
 
-  pool.query(
-    `SELECT * FROM Comment WHERE parentCommentID = ?`,
-    [commentID],
-    (err, result, fields) => {
-      if (err) {
-        return res.status(404).json({ error: "No children comment" });
-      } else {
-        // Assuming result is an array, you may need to adjust accordingly
-        results.push(...result);
-        res.json(results);
-      }
-    }
-  );
-});
+
+
+app.route('/api/secure/forums')
+    .get((req, res) => {
+        const results = [];    
+        pool.query('SELECT * FROM Forum ORDER BY RAND() LIMIT 6', [], (err, result, fields) => {
+            if (err) {
+                return res.status(404).json({ error: 'No forums in the database' });
+            } else {
+                // Assuming result is an array, you may need to adjust accordingly
+                results.push(...result);
+                console.log(result)
+                res.json(results);
+            }
+        });
+    });
+app.route('/api/secure/forums/:forumID/comments')
+    .get((req, res) => {
+        const results = [];
+        const forumID = req.params.forumID
+        
+        pool.query(`SELECT * FROM Comment WHERE forumID = ?`, [forumID], (err, result, fields) => {
+            if (err) {
+                return res.status(404).json({ error: 'No forums in the database' });
+            } else {
+                // Assuming result is an array, you may need to adjust accordingly
+                results.push(...result);
+                res.json(results);
+            }
+        });
+    });
+    app.route('/api/secure/comments/:commentID/children')
+    .get((req, res) => {
+        const results = [];
+        const commentID = req.params.commentID
+        
+        pool.query(`SELECT * FROM Comment WHERE parentCommentID = ?`, [commentID], (err, result, fields) => {
+            if (err) {
+                return res.status(404).json({ error: 'No children comment' });
+            } else {
+                // Assuming result is an array, you may need to adjust accordingly
+                results.push(...result);
+                res.json(results);
+            }
+        });
+    });
 
 // POST route for login
 app.post("/api/login", (req, res) => {

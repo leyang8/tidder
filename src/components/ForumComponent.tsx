@@ -1,3 +1,4 @@
+"use client"
 import { ForumComponentProps } from '@/types'
 import { Card } from 'flowbite-react'
 import React, { useEffect, useState } from 'react'
@@ -24,9 +25,6 @@ const ForumComponent = ({forumData}: ForumComponentProps) => {
             .then(responseData => {
                 console.log('GET successful:', responseData);
                 setAuthorName(responseData)
-
-                
-                
             })
             .catch(error => {
                 console.error('Error:', error);
@@ -49,6 +47,7 @@ const ForumComponent = ({forumData}: ForumComponentProps) => {
                 return response.json();
             })
             .then(responseData => {
+                
                 console.log('GET successful:', responseData);
                 setComments(responseData)
 
@@ -63,11 +62,11 @@ const ForumComponent = ({forumData}: ForumComponentProps) => {
     }
 
     useEffect(() => {
-        fetchAuthorName()
         fetchComments()
-    }, [])
+        fetchAuthorName()
+    }, [forumData])
   return (
-    <Card className = "max-w-xl">
+    <Card className = "max-w-5xl">
         <h5 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
             {forumData.title}
         </h5>
@@ -78,8 +77,8 @@ const ForumComponent = ({forumData}: ForumComponentProps) => {
             Comments:
         </h5>
         <div className='results'>
-        {comments.map((result) => (
-          <div className="mt-10">            
+        {comments.map((result, index) => (
+          <div className="mt-10" key={index}>            
             <CommentComponent commentData={result}/>
          </div>
          ))}  
