@@ -114,8 +114,9 @@ const Dashboard = () => {
             <button id='logoutBtn' onClick={onLogout}>Logout</button>
         </div>
         <p>
-            Welcome to Tidder! View forums below!
+            Welcome to Tidder! View or create forums below!
         </p>
+        <Button className="transition-transform transform hover:scale-105" gradientDuoTone="purpleToPink" href="/forum/create">Surprise me!</Button>
 
         <form className="flex max-w-md flex-col gap-4 mt-10" onSubmit={handleSubmit}>
                 <div className="mb-2 block">

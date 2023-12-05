@@ -73,16 +73,19 @@ const ForumComponent = ({forumData}: ForumComponentProps) => {
         <p>Created on: {new Date(forumData.creationDate).toLocaleString()}</p>
         <p>Created by @{authorName}</p>
 
+        
+        <Card>
+        <div className='results'>
         <h5 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
             Comments:
         </h5>
-        <div className='results'>
         {comments.map((result, index) => (
           <div className="mt-10" key={index}>            
             <CommentComponent commentData={result}/>
          </div>
          ))}  
          </div>
+        </Card>
 
 
     </Card>
