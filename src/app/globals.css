@@ -366,3 +366,25 @@ h1 {
 .form__input:focus {
   border: 2px solid var(--first-color);
 }
+
+
+
+.infoContainer{
+  display: flex;
+  align-items: center; 
+  justify-content: space-between;
+  padding-right: 20px;
+}
+
+#logoutBtn{
+  padding: 4px 8px; 
+  font-size: 0.8rem; 
+  border-radius: 4px;
+  background-color: #5bc0de;
+  width: auto; /* Adjust width as needed, or remove for content-based width */
+  flex: 0 1 auto;
+}
+
+#logoutBtn:hover {
+  background-color: #4897af; /* Even darker blue for the hover state */
+}
