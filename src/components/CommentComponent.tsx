@@ -1,7 +1,7 @@
 "use client"
 import { CommentComponentProps } from '@/types'
 import { Accordion, Button, Card, Label, TextInput } from 'flowbite-react';
-
+import Cookies from 'js-cookie';
 import React, { useEffect, useState } from 'react'
 
 const CommentComponent = ({commentData}: CommentComponentProps) => {
@@ -35,7 +35,7 @@ const CommentComponent = ({commentData}: CommentComponentProps) => {
             })
             .then(responseData => {
                 console.log('GET successful:', responseData);
-                setAuthorName(responseData)
+               
                 
             })
             .catch(error => {
@@ -99,10 +99,14 @@ const CommentComponent = ({commentData}: CommentComponentProps) => {
 
     }
     useEffect(() => {
+        const currentUserID = Cookies.get("currentUserID");
+        if (currentUserID) {
+            setUserID(currentUserID)
+        }  
         fetchAuthorName()
         fetchChildrenComments()
 
-    }, [])
+    }, [commentData])
   return (
     <Card>
         <h5 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
