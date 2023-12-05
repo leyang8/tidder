@@ -6,7 +6,34 @@ import CommentComponent from './CommentComponent'
 
 const ForumComponent = ({forumData}: ForumComponentProps) => {
     const [comments, setComments] = useState([])
+    const [authorName, setAuthorName] = useState('')
+    async function fetchAuthorName(){
+        const url = `http://localhost:5002/api/secure/users/${forumData.creatorID}`;
+        fetch(url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(responseData => {
+                console.log('GET successful:', responseData);
+                setAuthorName(responseData)
 
+                
+                
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                
+            });
+
+    }
     async function fetchComments(){
         const url = `http://localhost:5002/api/secure/forums/${forumData.forumID}/comments`;
         fetch(url, {
@@ -36,6 +63,7 @@ const ForumComponent = ({forumData}: ForumComponentProps) => {
     }
 
     useEffect(() => {
+        fetchAuthorName()
         fetchComments()
     }, [])
   return (
@@ -44,7 +72,7 @@ const ForumComponent = ({forumData}: ForumComponentProps) => {
             {forumData.title}
         </h5>
         <p>Created on: {new Date(forumData.creationDate).toLocaleString()}</p>
-        <p>Created by user: {forumData.creatorID}</p>
+        <p>Created by @{authorName}</p>
 
         <h5 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
             Comments:

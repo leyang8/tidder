@@ -10,8 +10,8 @@ const pool = createPool({
     host: 'localhost',
     port: 3306,
     user: 'root',
-    password: 'Xingleyanglili12.',
-    database: 'se3309',
+    password: 'rootuser',
+    database: 'new_schema',
     connectionLimit: 10
 
 })
@@ -24,6 +24,23 @@ app.use(express.json()); // for parsing application/json
 app.use(cors());
 
 
+// Get username off of userID
+app.route('/api/secure/users/:id')
+    .get((req, res) => {
+        const userID = req.params.id
+        var usernameResult = ''
+        
+        pool.query('SELECT * FROM User WHERE userID = ?', [userID], (err, result, fields) => {
+            if (err) {
+                return res.status(404).json({ error: 'No user in the database' });
+            } else {
+                // Assuming result is an array, you may need to adjust accordingly
+                usernameResult = result[0].username
+                console.log(result)
+                res.json(usernameResult);
+            }
+        });
+    });
 
 app.route('/api/secure/forums')
     .get((req, res) => {
