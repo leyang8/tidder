@@ -9,7 +9,7 @@ const pool = createPool({
   port: 3306,
   user: "root",
   password: "rootuser",
-  database: "new_schema",
+  database: "se3309_project",
   connectionLimit: 10,
 });
 
@@ -260,28 +260,27 @@ app.route("/api/secure/comments/:commentID/children").get((req, res) => {
 });
 
 //Route For Profile Follower List
-app.route('/api/profile/:userID')
-  .get((req, res) => {
-    const userID = req.params.userID;
+app.route("/api/profile/:userID").get((req, res) => {
+  const userID = req.params.userID;
 
-    pool.query(
-      `SELECT U.username
+  pool.query(
+    `SELECT U.username
       FROM User U
       JOIN Followship F ON U.userID = F.followerUserID
       WHERE F.followeeUserID = ?`,
-      [userID],
-      (err, result, fields) => {
-        if (err) {
-          console.error(err);
-          return res.status(500).json({ error: 'Internal Server Error' });
-        }
-
-        const followersUsernames = result.map((row) => row.username);
-        console.log(followersUsernames)
-        res.json(followersUsernames);
+    [userID],
+    (err, result, fields) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).json({ error: "Internal Server Error" });
       }
-    );
-  });
+
+      const followersUsernames = result.map((row) => row.username);
+      console.log(followersUsernames);
+      res.json(followersUsernames);
+    }
+  );
+});
 // POST route for login
 app.post("/api/login", (req, res) => {
   const { email, password } = req.body;
@@ -353,26 +352,26 @@ app.post("/api/register", (req, res) => {
   );
 });
 
-
 app.post("/api/createForum", (req, res) => {
-    const { title, creationDate, creatorID } = req.body;
+  const { title, creationDate, creatorID } = req.body;
 
-    // Select a random adminID between 1 and 5
-    const randomAdmin = Math.floor(Math.random() * 5) + 1; 
+  // Select a random adminID between 1 and 5
+  const randomAdmin = Math.floor(Math.random() * 5) + 1;
 
-    // Using prepared statement for security
-    const query = 'INSERT INTO Forum (title, creationDate, creatorID, adminID) VALUES (?, ?, ?, ?)';
-    const values = [title, creationDate, creatorID, randomAdmin];
+  // Using prepared statement for security
+  const query =
+    "INSERT INTO Forum (title, creationDate, creatorID, adminID) VALUES (?, ?, ?, ?)";
+  const values = [title, creationDate, creatorID, randomAdmin];
 
-    pool.query(query, values, (err, result, fields) => {
-        if (err) {
-            // Return a more appropriate error message
-            console.error(err); // Log the error for debugging
-            return res.status(500).json({ message: "An error occurred while creating the forum." });
-        }
-        // Success message
-        return res.status(200).json({ message: "Forum created successfully." });
-    });
+  pool.query(query, values, (err, result, fields) => {
+    if (err) {
+      // Return a more appropriate error message
+      console.error(err); // Log the error for debugging
+      return res
+        .status(500)
+        .json({ message: "An error occurred while creating the forum." });
+    }
+    // Success message
+    return res.status(200).json({ message: "Forum created successfully." });
+  });
 });
-
-
