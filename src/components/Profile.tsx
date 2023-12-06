@@ -225,7 +225,7 @@ const Profile = () => {
               {forums.length !== 0 && (
                 <div className="gap-2">
                   {forums.map((forum, index) => (
-                    <Card key={index}> {forum} </Card>
+                    <Card key={index}>You created {forum} </Card>
                   ))}
                 </div>
               )}
@@ -241,7 +241,7 @@ const Profile = () => {
               {reactions.length !== 0 && (
                 <div className="gap-2">
                   {reactions.map((reaction, index) => (
-                    <Card key={index}>{reaction}</Card>
+                    <Card key={index}>{reaction} liked your post</Card>
                   ))}
                 </div>
               )}
