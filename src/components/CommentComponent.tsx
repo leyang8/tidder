@@ -9,7 +9,7 @@ const CommentComponent = ({commentData}: CommentComponentProps) => {
     const [authorName, setAuthorName] = useState('')
     const [newReply, setNewReply] = useState('')
     const [userID, setUserID] = useState('')
-
+    const [isAdmin, setIsAdmin] = useState('false')
     async function submitReply(event: React.FormEvent){
         event.preventDefault()
         const url = `http://localhost:5002/api/secure/comments/reply`;
@@ -100,6 +100,11 @@ const CommentComponent = ({commentData}: CommentComponentProps) => {
     }
     useEffect(() => {
         const currentUserID = Cookies.get("currentUserID");
+        const adminQuery = Cookies.get("isAdmin");
+        
+        if(adminQuery == 'true'){
+            setIsAdmin('true')
+        }
         if (currentUserID) {
             setUserID(currentUserID)
         }  
@@ -113,6 +118,17 @@ const CommentComponent = ({commentData}: CommentComponentProps) => {
             @{authorName}
         </h5>
         <p className='mb-10'>{commentData.content}</p>
+
+        {(isAdmin == 'true') && 
+        <Card>
+            <form onSubmit={submitReply}>
+       
+            <Label value="Admin Controls:" />
+            
+            <Button className="mt-5 max-w-xl transition-transform transform hover:scale-105" color="failure" type="submit">Delete Comment</Button>
+            </form>
+            </Card>
+        }
         {children.length!==0 &&
         <Card>
         <h5 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">

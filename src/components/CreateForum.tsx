@@ -1,3 +1,4 @@
+"use client"
 // pages/createForumPage.js
 import React, { useState } from 'react';
 
@@ -5,7 +6,7 @@ const CreateForumPage = () => {
     const [title, setTitle] = useState('');
     const [comment, setComment] = useState('');
 
-    const handleSubmit = async (event) => {
+    const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
         const forumData = { title, comment };
 
