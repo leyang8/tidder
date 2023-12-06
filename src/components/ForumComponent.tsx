@@ -228,23 +228,9 @@ const ForumComponent = ({ forumData }: ForumComponentProps) => {
             });
 
     }
+})
+    
 
-    useEffect(() => {
-        const currentUserID = Cookies.get("currentUserID");
-        const adminQuery = Cookies.get("isAdmin");
-        if (currentUserID) {
-            setUserID(currentUserID)
-        }  
-        console.log("adminQuery:" + adminQuery)
-        if(adminQuery == 'true'){
-            setIsAdmin('true')
-        }
-        fetchUserFollows()
-        fetchComments()
-        fetchAuthorName()
-        setShowAlert(false)
-        
-    }, [forumData])
 
   return (
     <Card className="max-w-5xl">
