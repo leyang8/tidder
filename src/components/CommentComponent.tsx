@@ -4,6 +4,8 @@ import { Accordion, Alert, Avatar, Button, Card, Label, TextInput } from 'flowbi
 import Cookies from 'js-cookie';
 import React, { useEffect, useState } from 'react'
 import { HiInformationCircle } from 'react-icons/hi';
+import { FiHeart } from "react-icons/fi";
+import { FaPoo } from "react-icons/fa";
 
 const CommentComponent = ({commentData}: CommentComponentProps) => {
     const [children, setChildren] = useState([]);
@@ -13,6 +15,12 @@ const CommentComponent = ({commentData}: CommentComponentProps) => {
     const [isAdmin, setIsAdmin] = useState('false')
     const [showAlert, setShowAlert] = useState(false); // State to manage alert visibility
     const [alertMessage, setAlertMessage] = useState('');
+    const [likeCount, setLikeCount] = useState(0)
+    const [dislikeCount, setDislikeCount] = useState(0)
+    const [isReactionLike, setIsReactionLike] = useState(true)
+    const [likeColour, setLikeColour] = useState('black')
+    const [dislikeColour, setDislikeColour] = useState('black')
+    
     async function handleDelete(event: React.FormEvent){
         event.preventDefault()
         const url = `http://localhost:5002/api/secure/comments/delete`;
@@ -43,6 +51,86 @@ const CommentComponent = ({commentData}: CommentComponentProps) => {
                 console.error('Error:', error);
                 
             });
+
+
+    }
+    async function submitLike(event: React.FormEvent){
+        event.preventDefault()
+
+        setIsReactionLike(true)
+        
+        setLikeColour("red")
+        setDislikeColour('black')
+            
+
+        const url = `http://localhost:5002/api/secure/comments/${commentData.commentID}/reactions`;
+        const data = {
+            isLike: isReactionLike,
+            userID: userID
+        }
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(responseData => {
+                console.log('POST successful:', responseData);
+                if(isReactionLike){
+                    setLikeCount(likeCount + 1)
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                
+            });
+
+
+
+    }
+    async function submitDislike(event: React.FormEvent){
+        event.preventDefault()
+
+        setIsReactionLike(false)
+        setLikeColour('black')
+        setDislikeColour('red')
+        
+        const url = `http://localhost:5002/api/secure/comments/${commentData.commentID}/reactions`;
+        const data = {
+            isLike: isReactionLike,
+            userID: userID
+        }
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(responseData => {
+                console.log('POST successful:', responseData);
+                if(isReactionLike){
+                    setDislikeCount(dislikeCount + 1)
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                
+            });
+
 
 
     }
@@ -109,6 +197,31 @@ const CommentComponent = ({commentData}: CommentComponentProps) => {
             });
 
     }
+    async function fetchReactions(){
+        const url = `http://localhost:5002/api/secure/comments/${commentData.commentID}/reactions`;
+        fetch(url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(responseData => {
+                console.log('GET successful:', responseData);
+                setLikeCount(responseData.likes)
+                setDislikeCount(responseData.dislikes)
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                
+            });
+
+    }
     async function fetchChildrenComments(){
         const url = `http://localhost:5002/api/secure/comments/${commentData.commentID}/children`;
         fetch(url, {
@@ -147,6 +260,7 @@ const CommentComponent = ({commentData}: CommentComponentProps) => {
             setUserID(currentUserID)
         }  
         fetchAuthorName()
+        fetchReactions()
         fetchChildrenComments()
         setShowAlert(false)
 
@@ -160,11 +274,20 @@ const CommentComponent = ({commentData}: CommentComponentProps) => {
         </h5>
         
         </div>
-        <p className='mb-10'>{commentData.content}</p>
+        <p className='mb-5'>{commentData.content}</p>
+        <div className="flex flex-wrap gap-2">
+        <FiHeart size={28} color={likeColour} onClick={submitLike}/>
+        <Label>{likeCount}</Label>
+        </div>
+        <div className="flex flex-wrap gap-2">
+        <FaPoo size={28} color={dislikeColour} onClick={submitDislike}/>
+        <Label>{dislikeCount}</Label>
+        </div>
 
         {(isAdmin == 'true') && 
         <Card>
-            <form onSubmit={handleDelete}>
+            <form onSubmit={
+                handleDelete}>
        
             <Label value="Admin Controls:" />
             
