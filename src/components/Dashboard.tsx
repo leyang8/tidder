@@ -12,12 +12,20 @@ const Dashboard = () => {
   const [currentUsername, setCurrentUsername] = useState<string>("");
   const [forumQuery, setForumQuery] = useState("");
   const [userQuery, setUserQuery] = useState("");
+  const [titleQuery, setTitleQuery] = useState("");
   const [showAlert, setShowAlert] = useState(false); // State to manage alert visibility
   const [alertMessage, setAlertMessage] = useState("");
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
-    const url = `http://localhost:5002/api/secure/forums/creator/${userQuery}`;
-    fetch(url, {
+    const url = `http://localhost:5002/api/secure/forums/query/`
+    const data = {
+      userQuery: userQuery,
+      titleQuery: titleQuery
+
+    }
+    const params = new URLSearchParams(data);
+    const urlWithParams = `${url}?${params}`;
+    fetch(urlWithParams, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -125,11 +133,21 @@ const Dashboard = () => {
           <div className="mb-2 block">
             <Label value="Creator Username (Optional):" />
             <TextInput
-              required
               placeholder="Example: john.smith"
               shadow
               onChange={(e) => {
                 setUserQuery(e.target.value);
+              }}
+            />
+          </div>
+
+          <div className="mb-2 block">
+            <Label value="Forum Name (Optional):" />
+            <TextInput
+              placeholder="Example: Motorcycles"
+              shadow
+              onChange={(e) => {
+                setTitleQuery(e.target.value);
               }}
             />
           </div>

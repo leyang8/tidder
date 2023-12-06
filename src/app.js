@@ -218,30 +218,49 @@ app.route("/api/secure/users/:id").get(async (req, res) => {
   );
 });
 
-app.route("/api/secure/forums/creator/:username").get(async (req, res) => {
-  const username = req.params.username;
-  const results = [];
+app.route("/api/secure/forums/query")
+  .get(async (req, res) => {
+    const username = req.query.userQuery;
+    const title = req.query.titleQuery;
+    const results = [];
 
-  // Use a JOIN to select forums based on the matching creatorID and username
-  const sql = `
-                  SELECT Forum.*
-                  FROM Forum
-                  INNER JOIN User ON Forum.creatorID = User.userID
-                  WHERE User.username LIKE ?
-                  LIMIT 6
-              `;
+    // Use a JOIN to select forums based on the matching creatorID and username
+    let sql = `
+      SELECT Forum.*
+      FROM Forum
+      INNER JOIN User ON Forum.creatorID = User.userID
+    `;
 
-  pool.query(sql, [`%${username}%`], (err, result, fields) => {
-    if (err) {
-      return res.status(500).json({ error: "Internal server error" });
-    } else {
-      // Assuming result is an array, you may need to adjust accordingly
-      console.log(result);
-      results.push(...result);
-      res.json(results);
+    const conditions = [];
+    const params = [];
+
+    if (username) {
+      conditions.push('User.username LIKE ?');
+      params.push(`%${username}%`);
     }
+
+    if (title) {
+      conditions.push('Forum.title LIKE ?');
+      params.push(`%${title}%`);
+    }
+
+    if (conditions.length > 0) {
+      sql += ' WHERE ' + conditions.join(' AND ');
+      sql += ' LIMIT 6';
+    }
+
+    pool.query(sql, params, (err, result, fields) => {
+      if (err) {
+        return res.status(500).json({ error: "Internal server error" });
+      } else {
+        // Assuming result is an array, you may need to adjust accordingly
+        console.log(result);
+        results.push(...result);
+        res.json(results);
+      }
+    });
   });
-});
+
 
 app
   .route("/api/secure/forums")
