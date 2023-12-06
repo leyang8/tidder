@@ -530,23 +530,24 @@ app.route("/api/profile/reaction/:userID").get((req, res) => {
   );
 });
 
-//Post Route for Edit Profile
-app.route("/api/profile/editProfile/:userID").post((req, res) => {
-  const userID = req.params.userID;
-  const {
-    firstName,
-    middleName,
-    lastName,
-    username,
-    email,
-    phoneNumber,
-    password,
-  } = req.body;
-
-  // You should perform validation and sanitation on the input data before updating the database
-
-  // Construct the SQL query
-  const sql = `
+// Post Route for Edit Profile
+app.route("/api/profile/editProfile").post((req, res) => {
+    const {
+        userID,
+        firstName,
+        middleName,
+        lastName,
+        username,
+        email,
+        phoneNumber,
+        password, // This should be hashed in a real application
+    } = req.body;
+  
+    console.log("set profile body",req.body)
+    // Validation and sanitation of input data should be performed here
+  
+    // Construct the SQL query
+    const sql = `
       UPDATE User
       SET
         firstName = ?,
@@ -555,43 +556,34 @@ app.route("/api/profile/editProfile/:userID").post((req, res) => {
         username = ?,
         email = ?,
         phoneNumber = ?,
-        password = ?
+        password = ? 
       WHERE userID = ?
     `;
-
-  // Execute the SQL query
-  pool.query(
-    sql,
-    [
-      firstName,
-      middleName,
-      lastName,
-      username,
-      email,
-      phoneNumber,
-      password,
-      userID,
-    ],
-    (err, result) => {
-      if (err) {
-        console.error(err);
-        return res.status(500).json({ error: "Internal Server Error" });
-      }
-
-      // Check if the update was successful
-      if (result.affectedRows > 0) {
-        return res.json({
-          success: true,
-          message: "Profile updated successfully",
-        });
-      } else {
-        return res
-          .status(404)
-          .json({ error: "User not found or no changes made" });
-      }
-    }
-  );
-});
+  
+    // Execute the SQL query
+    pool.query(
+        sql,
+        [
+        firstName,
+        middleName,
+        lastName,
+        username,
+        email,
+        phoneNumber,
+        password, // The unhashed password is used here for the sake of this example
+        userID,
+        ],
+        (err) => { // Removed result since it's not being used
+        if (err) {
+            console.error(err);
+            return res.status(500).json({ error: "Internal Server Error" });
+        }
+        // If no SQL error, assume success
+        return res.status(200).json({ message: "Profile updated successfully" });
+        }
+    );
+  });
+  
 
 // POST route for login
 app.post("/api/login", async (req, res) => {

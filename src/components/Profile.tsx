@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import { Alert, Avatar, Button, Card, Label, TextInput } from "flowbite-react";
+import { EditProfileForm } from ".";
 
 const Profile = () => {
   const [currentUserID, setCurrentUserID] = useState<any>("");
@@ -116,6 +117,7 @@ const Profile = () => {
     }
   };
 
+
   const fetchUserInfo = async (userID: number) => {
     try {
       const response = await fetch(
@@ -144,6 +146,7 @@ const Profile = () => {
     }
   };
 
+
   useEffect(() => {
     const userID = Cookies.get("currentUserID");
     if (userID) {
@@ -155,13 +158,12 @@ const Profile = () => {
     fetchFollowingList(Number(userID));
     fetchForumList(Number(userID));
     fetchReactionList(Number(userID));
-    fetchUserInfo(Number(userID));
 
     // Assuming you have a function to get the current user ID, replace this with your logic
   }, []);
 
   return (
-    <>
+    <
       <section className="position-absolute mt-20">
         <Card>
           <Card className="">
@@ -250,6 +252,11 @@ const Profile = () => {
             </Card>
           </div>
         </Card>
+      </section>
+      <section>
+      <Card>
+      <EditProfileForm></EditProfileForm>
+      </Card>
       </section>
     </>
     //<div>Profile</div>
