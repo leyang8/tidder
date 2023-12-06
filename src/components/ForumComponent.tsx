@@ -117,7 +117,7 @@ const ForumComponent = ({forumData}: ForumComponentProps) => {
 
         
         <Card>
-
+            
         <form onSubmit={submitReply}>
             <div className="mb-2 block">
                     <Label value="Leave a new comment" />
@@ -129,7 +129,7 @@ const ForumComponent = ({forumData}: ForumComponentProps) => {
                         }}
                     />
                 </div>
-                <Button className="mt-5 transition-transform transform hover:scale-105" gradientDuoTone="redToYellow" type="submit">Submit</Button>
+                <Button className="mt-5 max-w-xl transition-transform transform hover:scale-105" gradientDuoTone="redToYellow" type="submit">Submit</Button>
                 </form>
         <div className='results'>
         <h5 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">

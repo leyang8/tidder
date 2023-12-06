@@ -1,3 +1,4 @@
+"use client"
 import React, { FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 

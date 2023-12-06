@@ -4,8 +4,10 @@ import React, { useEffect, useState } from 'react'
 import { ForumComponent } from '.';
 import { HiInformationCircle } from 'react-icons/hi';
 import Cookies from 'js-cookie';
+import { useRouter } from 'next/navigation';
 
 const Dashboard = () => {
+    const router = useRouter()
     const [forums, setForums] = useState([]);
     const [currentUsername, setCurrentUsername] = useState<string>("")
     const [forumQuery, setForumQuery] = useState('');
@@ -15,7 +17,6 @@ const Dashboard = () => {
     async function handleSubmit(event: React.FormEvent){
         event.preventDefault()
         const url = `http://localhost:5002/api/secure/forums/creator/${userQuery}`;
-   
         fetch(url, {
             method: 'GET',
             headers: {
@@ -55,13 +56,9 @@ const Dashboard = () => {
                 console.log('GET successful:', responseData);
                 setForums(responseData)
                 setShowAlert(false)
-
-                
             })
             .catch(error => {
-                console.error('Error:', error);
-                
-                
+                console.error('Error:', error);     
             });
         
     }
@@ -91,17 +88,16 @@ const Dashboard = () => {
             });
 
     }
-    const onLogout = () => {
-        Cookies.remove('currentUserID');
-        window.location.href = '/'
-    }
-
+    
     useEffect(() => {
         // Get the username from cookies
         const currentUserID = Cookies.get("currentUserID");
         if (currentUserID) {
             fetchUserName(currentUserID)
-        }        
+        } if(!currentUserID){
+            router.push('/login')
+            
+        }       
         fetchForums();
     }, [])
   return (
@@ -111,7 +107,7 @@ const Dashboard = () => {
             <h1 className="hero__title">
                 Tidder, Welcome! {currentUsername}
             </h1>
-            <button id='logoutBtn' onClick={onLogout}>Logout</button>
+            
         </div>
         <p>
             Welcome to Tidder! View or create forums below!
