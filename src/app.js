@@ -333,10 +333,10 @@ app.route('/api/profile/forumCreated/:userID')
 //Route for Finding Reaction Notifications
 app.route('/api/profile/reaction/:userID')
   .get((req, res) => {
-    const currentUserID = req.params.currentUserID;
+    const userID = req.params.currentUserID;
 
     pool.query(
-      `SELECT U.username AS likerUsername
+      `SELECT DISTINCT U.username
       FROM Reaction_Notification R
       JOIN User U ON R.userID = U.userID
       WHERE R.receiverID = ?`,
@@ -353,6 +353,58 @@ app.route('/api/profile/reaction/:userID')
       }
     );
   });
+
+//Post Route for Edit Profile
+app.route('/api/profile/editProfile/:userID')
+  .post((req, res) => {
+    const userID = req.params.userID;
+    const {
+      firstName,
+      middleName,
+      lastName,
+      username,
+      email,
+      phoneNumber,
+      password,
+    } = req.body;
+
+    // You should perform validation and sanitation on the input data before updating the database
+
+    // Construct the SQL query
+    const sql = `
+      UPDATE User
+      SET
+        firstName = ?,
+        middleName = ?,
+        lastName = ?,
+        username = ?,
+        email = ?,
+        phoneNumber = ?,
+        password = ?
+      WHERE userID = ?
+    `;
+
+    // Execute the SQL query
+    pool.query(
+      sql,
+      [firstName, middleName, lastName, username, email, phoneNumber, password, userID],
+      (err, result) => {
+        if (err) {
+          console.error(err);
+          return res.status(500).json({ error: 'Internal Server Error' });
+        }
+
+        // Check if the update was successful
+        if (result.affectedRows > 0) {
+          return res.json({ success: true, message: 'Profile updated successfully' });
+        } else {
+          return res.status(404).json({ error: 'User not found or no changes made' });
+        }
+      }
+    );
+  });
+
+
 
 // POST route for login
 app.post("/api/login", (req, res) => {
