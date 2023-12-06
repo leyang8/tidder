@@ -158,12 +158,13 @@ const Profile = () => {
     fetchFollowingList(Number(userID));
     fetchForumList(Number(userID));
     fetchReactionList(Number(userID));
+    fetchUserInfo(Number(userID))
 
     // Assuming you have a function to get the current user ID, replace this with your logic
   }, []);
 
   return (
-    <
+    <>
       <section className="position-absolute mt-20">
         <Card>
           <Card className="">
