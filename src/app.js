@@ -9,7 +9,7 @@ const pool = createPool({
   port: 3306,
   user: "root",
   password: "rootuser",
-  database: "se3309_project",
+  database: "new_schema",
   connectionLimit: 10,
 });
 
