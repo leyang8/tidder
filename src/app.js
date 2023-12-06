@@ -8,8 +8,8 @@ const pool = createPool({
   host: "localhost",
   port: 3306,
   user: "root",
-  password: "Xingleyanglili12.",
-  database: "se3309",
+  password: "rootuser",
+  database: "se3309_project",
   connectionLimit: 10,
 });
 
@@ -75,11 +75,11 @@ const app = express();
 app.use(express.json()); // for parsing application/json
 app.use(cors());
 
-
-app.route('/api/secure/follows/:firstID/:secondID')
+app
+  .route("/api/secure/follows/:firstID/:secondID")
   .get(async (req, res) => {
-    const firstID = req.params.firstID
-    const secondID = req.params.secondID
+    const firstID = req.params.firstID;
+    const secondID = req.params.secondID;
     pool.query(
       "SELECT * FROM Followship WHERE followerUserID = ? and followeeUserID = ?",
       [firstID, secondID],
@@ -89,38 +89,35 @@ app.route('/api/secure/follows/:firstID/:secondID')
         } else {
           console.log(result);
           // Assuming result is an array, you may need to adjust accordingly
-          if(!result[0]){
+          if (!result[0]) {
             res.json(false);
-            
           } else {
             res.json(true);
           }
-          
-          
         }
       }
     );
   })
-  .post(async (req,res) => {
-    const firstID = req.params.firstID
-    const secondID = req.params.secondID
+  .post(async (req, res) => {
+    const firstID = req.params.firstID;
+    const secondID = req.params.secondID;
     const creationDate = Math.floor(new Date().getTime() / 1000);
-    const follow = req.body.follow
-    if(follow){
-    pool.query(
-      "INSERT INTO Followship (followerUserID, followeeUserID, creationDate) VALUES (?, ?, ?)",
-      [firstID, secondID, creationDate],
-      (err, result, fields) => {
-        if (err) {
-          console.log(err)
-          return res.status(404).json({ error: "No user in the database" });
-        } else {
-          console.log(result);
-          // Assuming result is an array, you may need to adjust accordingly
-          res.json(1)
+    const follow = req.body.follow;
+    if (follow) {
+      pool.query(
+        "INSERT INTO Followship (followerUserID, followeeUserID, creationDate) VALUES (?, ?, ?)",
+        [firstID, secondID, creationDate],
+        (err, result, fields) => {
+          if (err) {
+            console.log(err);
+            return res.status(404).json({ error: "No user in the database" });
+          } else {
+            console.log(result);
+            // Assuming result is an array, you may need to adjust accordingly
+            res.json(1);
+          }
         }
-      }
-    );
+      );
     } else {
       pool.query(
         "DELETE FROM Followship WHERE followerUserID = ? AND followeeUserID = ?",
@@ -131,14 +128,12 @@ app.route('/api/secure/follows/:firstID/:secondID')
           } else {
             console.log(result);
             // Assuming result is an array, you may need to adjust accordingly
-            res.json(0)
-           
+            res.json(0);
           }
         }
       );
-
     }
-  })
+  });
 
 app.route("/api/secure/comments/delete").delete((req, res) => {
   const commentID = req.body.commentID;
@@ -223,12 +218,9 @@ app.route("/api/secure/users/:id").get(async (req, res) => {
   );
 });
 
-
-app.route("/api/secure/forums/creator/:username")
-    .get(async (req, res) => {
-        const username = req.params.username;
-        const results = [];
-
+app.route("/api/secure/forums/creator/:username").get(async (req, res) => {
+  const username = req.params.username;
+  const results = [];
 
   // Use a JOIN to select forums based on the matching creatorID and username
   const sql = `
@@ -251,155 +243,147 @@ app.route("/api/secure/forums/creator/:username")
   });
 });
 
-app.route("/api/secure/forums")
-    .get(async (req, res) => {
-      const results = [];
-      pool.query(
-        "SELECT * FROM Forum ORDER BY RAND() LIMIT 6",
-        [],
-        (err, result, fields) => {
-          if (err) {
-            return res.status(404).json({ error: "No forums in the database" });
-          } else {
-            // Assuming result is an array, you may need to adjust accordingly
-            results.push(...result);
-            console.log(result);
-            res.json(results);
-          }
+app
+  .route("/api/secure/forums")
+  .get(async (req, res) => {
+    const results = [];
+    pool.query(
+      "SELECT * FROM Forum ORDER BY RAND() LIMIT 6",
+      [],
+      (err, result, fields) => {
+        if (err) {
+          return res.status(404).json({ error: "No forums in the database" });
+        } else {
+          // Assuming result is an array, you may need to adjust accordingly
+          results.push(...result);
+          console.log(result);
+          res.json(results);
         }
-      );
-    })
-    .delete((req, res) => {
-        const forumID = req.body.forumID
-        pool.query(
-          "DELETE FROM Forum WHERE forumID = ?",
-          [forumID],
-          (err, result, fields) => {
-            if (err) {
-              return res.status(404).json({ error: "No forums in the database" });
-            } else {
-              // Assuming result is an array, you may need to adjust accordingly
-              return res.status(201).json({ message: "Successful delete!" });
-              
-            }
-          }
-      );
-    })
-app.route("/api/secure/forums/:forumID/comments")
-    .get(async (req, res) => {
-      const results = [];
-      const forumID = req.params.forumID;
-
-      pool.query(
-        `SELECT * FROM Comment WHERE forumID = ? AND parentCommentID IS NULL`,
-        [forumID],
-        (err, result, fields) => {
-          if (err) {
-            return res.status(404).json({ error: "No forums in the database" });
-          } else {
-            // Assuming result is an array, you may need to adjust accordingly
-            results.push(...result);
-            res.json(results);
-          }
+      }
+    );
+  })
+  .delete((req, res) => {
+    const forumID = req.body.forumID;
+    pool.query(
+      "DELETE FROM Forum WHERE forumID = ?",
+      [forumID],
+      (err, result, fields) => {
+        if (err) {
+          return res.status(404).json({ error: "No forums in the database" });
+        } else {
+          // Assuming result is an array, you may need to adjust accordingly
+          return res.status(201).json({ message: "Successful delete!" });
         }
+      }
     );
   });
-// Tells if the user has already reacted to a comment
-app.route("/api/secure/comments/:id/:commentID/reacted")
-  .get(async (req, res) => {
-      const userID = req.params.id;
-      const commentID = req.params.commentID;
-      pool.query(
-        `SELECT * FROM Reaction WHERE commentID = ? AND userID = ?`,
-        [commentID, userID],
-        (err, result, fields) => {
-          if (err) {
-            return res.status(404).json({ error: "No reactions for comment" });
-          } else {
-            console.log(result)
-            if(!result[0]){
-              res.json(false);
-            } else {
-              res.json(result)
-            }
-            
-          }
-        }
-      );
-  })
+app.route("/api/secure/forums/:forumID/comments").get(async (req, res) => {
+  const results = [];
+  const forumID = req.params.forumID;
 
-
-app.route('/api/secure/comments/:id/reactions')
-    .get(async (req, res) => {
-      const commentID = req.params.id;
-      var likeResults = 0
-      var dislikeResults = 0
-      
-      pool.query(
-        `SELECT * FROM Reaction WHERE commentID = ?`,
-        [commentID],
-        (err, result, fields) => {
-          if (err) {
-            return res.status(404).json({ error: "No reactions for comment" });
-          } else {
-            
-            
-            result.forEach((result) => {
-              console.log(result)
-              if(result.isLike==1){
-                likeResults += 1
-              }else {
-                dislikeResults += 1
-              }
-            })
-            res.json({likes: likeResults, dislikes: dislikeResults});
-          }
-        }
-      );
-
-
-    })
-    .post(async (req, res) => {
-      const commentID = req.params.id;
-      const isLike = req.body.isLike;
-      const userID = req.body.userID;
-      const alreadyReacted = req.body.alreadyReacted;
-      console.log(alreadyReacted)
-      if(alreadyReacted == true) {
-        pool.query(
-          `UPDATE Reaction SET isLike = ? WHERE userID = ? AND commentID = ?`,
-          [isLike, userID, commentID],
-          (err, result, fields) => {
-            console.log(err)
-            console.log('reached')
-            if (err) {
-              
-              return res.status(500).json({ error: "Internal Server Error" });
-            } else {
-              if (result.affectedRows === 0) {
-                return res.status(404).json({ error: "No reactions updated" });
-              } else {
-                return res.status(200).json({ message: "Successful update!" });
-              }
-            }
-          }
-        );
+  pool.query(
+    `SELECT * FROM Comment WHERE forumID = ? AND parentCommentID IS NULL`,
+    [forumID],
+    (err, result, fields) => {
+      if (err) {
+        return res.status(404).json({ error: "No forums in the database" });
       } else {
-        pool.query(
-          `INSERT INTO Reaction (isLike, userID, commentID) VALUES (?, ?, ?)`,
-          [isLike, userID, commentID],
-          (err, result, fields) => {
-            if (err) {
-              return res.status(500).json({ error: "Internal Server Error" });
+        // Assuming result is an array, you may need to adjust accordingly
+        results.push(...result);
+        res.json(results);
+      }
+    }
+  );
+});
+// Tells if the user has already reacted to a comment
+app
+  .route("/api/secure/comments/:id/:commentID/reacted")
+  .get(async (req, res) => {
+    const userID = req.params.id;
+    const commentID = req.params.commentID;
+    pool.query(
+      `SELECT * FROM Reaction WHERE commentID = ? AND userID = ?`,
+      [commentID, userID],
+      (err, result, fields) => {
+        if (err) {
+          return res.status(404).json({ error: "No reactions for comment" });
+        } else {
+          console.log(result);
+          if (!result[0]) {
+            res.json(false);
+          } else {
+            res.json(result);
+          }
+        }
+      }
+    );
+  });
+
+app
+  .route("/api/secure/comments/:id/reactions")
+  .get(async (req, res) => {
+    const commentID = req.params.id;
+    var likeResults = 0;
+    var dislikeResults = 0;
+
+    pool.query(
+      `SELECT * FROM Reaction WHERE commentID = ?`,
+      [commentID],
+      (err, result, fields) => {
+        if (err) {
+          return res.status(404).json({ error: "No reactions for comment" });
+        } else {
+          result.forEach((result) => {
+            console.log(result);
+            if (result.isLike == 1) {
+              likeResults += 1;
             } else {
-              return res.status(201).json({ message: "Successful insert!" });
+              dislikeResults += 1;
+            }
+          });
+          res.json({ likes: likeResults, dislikes: dislikeResults });
+        }
+      }
+    );
+  })
+  .post(async (req, res) => {
+    const commentID = req.params.id;
+    const isLike = req.body.isLike;
+    const userID = req.body.userID;
+    const alreadyReacted = req.body.alreadyReacted;
+    console.log(alreadyReacted);
+    if (alreadyReacted == true) {
+      pool.query(
+        `UPDATE Reaction SET isLike = ? WHERE userID = ? AND commentID = ?`,
+        [isLike, userID, commentID],
+        (err, result, fields) => {
+          console.log(err);
+          console.log("reached");
+          if (err) {
+            return res.status(500).json({ error: "Internal Server Error" });
+          } else {
+            if (result.affectedRows === 0) {
+              return res.status(404).json({ error: "No reactions updated" });
+            } else {
+              return res.status(200).json({ message: "Successful update!" });
             }
           }
-        );
-      }
-    });
-    
-
+        }
+      );
+    } else {
+      pool.query(
+        `INSERT INTO Reaction (isLike, userID, commentID) VALUES (?, ?, ?)`,
+        [isLike, userID, commentID],
+        (err, result, fields) => {
+          if (err) {
+            return res.status(500).json({ error: "Internal Server Error" });
+          } else {
+            return res.status(201).json({ message: "Successful insert!" });
+          }
+        }
+      );
+    }
+  });
 
 app.route("/api/secure/comments/:commentID/children").get(async (req, res) => {
   const results = [];
@@ -467,51 +451,47 @@ app.route("/api/profile/following/:userID").get((req, res) => {
 
 // Route for finding all the forums a user has created
 app.route("/api/profile/forumCreated/:userID").get((req, res) => {
-    const userID = req.params.userID;
-    pool.query(
-      `SELECT title
+  const userID = req.params.userID;
+  pool.query(
+    `SELECT title
        FROM Forum
        WHERE creatorID = ?`,
-      [userID],
-      (err, result, fields) => {
-        if (err) {
-          console.error(err);
-          return res.status(500).json({ error: "Internal Server Error" });
-        }
-  
-        const forumTitles = result.map((row) => row.title);
-        console.log(forumTitles);
-        res.json(forumTitles);
+    [userID],
+    (err, result, fields) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).json({ error: "Internal Server Error" });
       }
-    );
-  });
-  
 
-
+      const forumTitles = result.map((row) => row.title);
+      console.log(forumTitles);
+      res.json(forumTitles);
+    }
+  );
+});
 
 // Route for Finding Reaction Notifications
 app.route("/api/profile/reaction/:userID").get((req, res) => {
-    const userID = req.params.userID;
-  
-    pool.query(
-      `SELECT DISTINCT U.username
+  const userID = req.params.userID;
+
+  pool.query(
+    `SELECT DISTINCT U.username
         FROM Reaction_Notification R
         JOIN User U ON R.userID = U.userID
         WHERE R.receiverID = ?`,
-      [userID],
-      (err, result, fields) => {
-        if (err) {
-          console.error(err);
-          return res.status(500).json({ error: "Internal Server Error" });
-        }
-  
-        const likerUsernames = result.map((row) => row.username);
-        console.log(likerUsernames);
-        res.json(likerUsernames);
+    [userID],
+    (err, result, fields) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).json({ error: "Internal Server Error" });
       }
-    );
-  });
-  
+
+      const likerUsernames = result.map((row) => row.username);
+      console.log(likerUsernames);
+      res.json(likerUsernames);
+    }
+  );
+});
 
 //Post Route for Edit Profile
 app.route("/api/profile/editProfile/:userID").post((req, res) => {
