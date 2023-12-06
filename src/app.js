@@ -8,7 +8,7 @@ const pool = createPool({
   host: "localhost",
   port: 3306,
   user: "root",
-  password: "rootuser",
+  password: "RootPasswordForMe123",
   database: "new_schema",
   connectionLimit: 10,
 });
@@ -171,6 +171,29 @@ app.route('/api/secure/forums/:forumID/comments')
         });
     });
 
+//Route For Profile Follower List
+app.route('/api/profile/:userID')
+  .get((req, res) => {
+    const userID = req.params.userID;
+
+    pool.query(
+      `SELECT U.username
+      FROM User U
+      JOIN Followship F ON U.userID = F.followerUserID
+      WHERE F.followeeUserID = ?`,
+      [userID],
+      (err, result, fields) => {
+        if (err) {
+          console.error(err);
+          return res.status(500).json({ error: 'Internal Server Error' });
+        }
+
+        const followersUsernames = result.map((row) => row.username);
+        console.log(followersUsernames)
+        res.json(followersUsernames);
+      }
+    );
+  });
 // POST route for login
 app.post("/api/login", (req, res) => {
   const { email, password } = req.body;
