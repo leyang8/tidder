@@ -7,7 +7,7 @@
 .pnp.js
 .yarn/install-state.gz
 
-*.png
+
 # testing
 /coverage
 
