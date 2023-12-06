@@ -9,7 +9,7 @@ const pool = createPool({
   port: 3306,
   user: "root",
   password: "rootuser",
-  database: "new_schema",
+  database: "se3309_project",
   connectionLimit: 10,
 });
 
@@ -445,6 +445,24 @@ app.route("/api/profile/following/:userID").get((req, res) => {
       const followingsUsernames = result.map((row) => row.username);
       console.log(followingsUsernames);
       res.json(followingsUsernames);
+    }
+  );
+});
+
+//Route for profile user info
+app.route("/api/profile/userInfo/:userID").get((req, res) => {
+  const userID = req.params.userID;
+
+  pool.query(
+    `SELECT * FROM User WHERE userID = ?`,
+    [userID],
+    (err, result, fields) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).json({ error: "Internal Server Error" });
+      }
+      console.log(result[0]);
+      res.json(result[0]);
     }
   );
 });
