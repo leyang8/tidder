@@ -15,6 +15,7 @@ const Navbar = () => {
   const [admin, setAdmin] = useState('')
   async function handleLogout(){
     Cookies.remove('currentUserID');
+    Cookies.remove('isAdmin')
     setUsername('')
     router.push('/login')
     
@@ -71,21 +72,32 @@ const Navbar = () => {
           />
         </Link>
 
-        <div className="flex space-x-4">         
+        <div className="flex space-x-4">  
+        {username != '' &&        
           <CustomButton
             title="Dashboard"
             href="/dashboard"
             btnType="button"
             containerStyles="text-white rounded-xl bg-black-100 min-w-w[130px] transition-transform transform hover:scale-105"
           />
+  }
           
-          
+          {username != '' && 
           <CustomButton
             title="Profile"
             href="/profile"
             btnType="button"
             containerStyles="text-white rounded-xl bg-black-100 min-w-w[130px] transition-transform transform hover:scale-105"
           />
+  }
+          {username == '' && 
+          <CustomButton
+            title="Register"
+            href="/register"
+            btnType="button"
+            containerStyles="text-white rounded-xl bg-black-100 min-w-w[130px] transition-transform transform hover:scale-105"
+          />
+          }
           {username == '' && 
           <CustomButton
             title="Sign In"

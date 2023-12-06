@@ -1,3 +1,4 @@
+"use client"
 // pages/createForumPage.js
 "use client";
 import React, { useState } from "react";
@@ -6,9 +7,9 @@ const CreateForumPage = () => {
   const [title, setTitle] = useState("");
   const [comment, setComment] = useState("");
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    const forumData = { title, comment };
+    const handleSubmit = async (event: React.FormEvent) => {
+        event.preventDefault();
+        const forumData = { title, comment };
 
     // Post forum data to your API endpoint
     const response = await fetch("/api/createForum", {
