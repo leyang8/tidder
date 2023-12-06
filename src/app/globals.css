@@ -232,18 +232,16 @@ button {
   width: calc(33.33% - 10px);
 }
 
-
-
-.infoContainer{
+.infoContainer {
   display: flex;
-  align-items: center; 
+  align-items: center;
   justify-content: space-between;
   padding-right: 20px;
 }
 
-#logoutBtn{
-  padding: 4px 8px; 
-  font-size: 0.8rem; 
+#logoutBtn {
+  padding: 4px 8px;
+  font-size: 0.8rem;
   border-radius: 4px;
   background-color: #5bc0de;
   width: auto; /* Adjust width as needed, or remove for content-based width */
