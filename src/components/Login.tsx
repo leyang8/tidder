@@ -36,7 +36,7 @@ const Login = () => {
       Cookies.set("currentUserID", currentUser.userID);
       console.log("setting admin to: " + data.isAdmin)
       Cookies.set("isAdmin", data.isAdmin);
-      // routeToDashboard();
+      routeToDashboard();
     } catch (error: any) {
       alert("Login error: " + error.message);
       // Handle login error (e.g., show error message)
