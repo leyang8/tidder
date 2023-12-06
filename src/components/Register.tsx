@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import React, { FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -65,8 +65,8 @@ const Register = () => {
 
   return (
     <>
-      <section>
-        <div className="form-box">
+      <section className="mt-5">
+        <div className="form-box mt-10">
           <div className="form-value">
             <form action="">
               <h2>Create Account</h2>

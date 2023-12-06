@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import React, { FormEvent, useState } from "react";
 import Cookies from "js-cookie";
 
@@ -44,8 +44,8 @@ const Login = () => {
 
   return (
     <>
-      <section>
-        <div className="form-box">
+      <section className="mt-5">
+        <div className="form-box mt-10">
           <div className="form-value">
             <form action="">
               <h2>Login</h2>
