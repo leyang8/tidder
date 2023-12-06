@@ -114,29 +114,31 @@ app.route("/api/secure/comments/new").post((req, res) => {
   );
 });
 
-app.route("/api/secure/comments/reply").post((req, res) => {
-  const forumID = req.body.forumID;
-  const parentCommentID = req.body.parentCommentID;
-  const content = req.body.content;
-  const creationDate = Math.floor(new Date().getTime() / 1000);
-  const creatorID = req.body.creatorID;
+app.route('/api/secure/comments/reply')
+    .post((req, res) => {
+        const forumID = req.body.forumID;
+        const parentCommentID = req.body.parentCommentID;
+        const content = req.body.content;
+        const creationDate = Math.floor(new Date().getTime() / 1000);
+        const creatorID = req.body.creatorID;
 
-  // Assuming you have a MySQL connection pool named 'pool'
-  pool.query(
-    "INSERT INTO Comment (parentCommentID, content, creationDate, creatorID, forumID) VALUES (?, ?, ?, ?, ?)",
-    [parentCommentID, content, creationDate, creatorID, forumID],
-    (err, result, fields) => {
-      if (err) {
-        console.error("Error inserting comment:", err);
-        return res.status(500).json({ error: "Failed to insert comment" });
-      }
+        // Assuming you have a MySQL connection pool named 'pool'
+        pool.query(
+            'INSERT INTO Comment (parentCommentID, content, creationDate, creatorID, forumID) VALUES (?, ?, ?, ?, ?)',
+            [parentCommentID, content, creationDate, creatorID, forumID],
+            (err, result, fields) => {
+                if (err) {
+                    console.error('Error inserting comment:', err);
+                    return res.status(500).json({ error: 'Failed to insert comment' });
+                }
 
-      // Assuming the commentID is an auto-increment field
-      const commentID = result.insertId;
-      res.json({ commentID, message: "Comment inserted successfully" });
-    }
-  );
-});
+                // Assuming the commentID is an auto-increment field
+                const commentID = result.insertId;
+                res.json({ commentID, message: 'Comment inserted successfully' });
+            }
+        );
+    });
+
 
 // Get username off of userID
 app.route("/api/secure/users/:id").get((req, res) => {
@@ -378,21 +380,7 @@ app.post("/api/login", (req, res) => {
       }
 
       // Passwords match, login successful
-      // Determine if user is admin
-      pool.query(
-        `SELECT * FROM Admin WHERE aUserID = ${user.userID}`,
-        [],
-        (err, result, fields) => {
-          if (err) {
-            return console.log(err);
-          }
-          if (result.length === 0) {
-            return res.status(200).json({ user: user, isAdmin: false });
-          } else {
-            return res.status(200).json({ user: user, isAdmin: true });
-          }
-        }
-      );
+      res.json({ user });
     }
   );
 });
@@ -424,26 +412,25 @@ app.post("/api/register", (req, res) => {
   );
 });
 
-app.post("/api/createForum", (req, res) => {
-  const { title, creationDate, creatorID } = req.body;
+app.route('/api/secure/createForum')
+    .post((req, res) => {
+        const { title, creatorID } = req.body;
+        // Select a random adminID between 1 and 5
+        const randomAdmin = Math.floor(Math.random() * 5) + 1; 
+        const creationDate = 1701822493;
 
-  // Select a random adminID between 1 and 5
-  const randomAdmin = Math.floor(Math.random() * 5) + 1;
-
-  // Using prepared statement for security
-  const query =
-    "INSERT INTO Forum (title, creationDate, creatorID, adminID) VALUES (?, ?, ?, ?)";
-  const values = [title, creationDate, creatorID, randomAdmin];
-
-  pool.query(query, values, (err, result, fields) => {
-    if (err) {
-      // Return a more appropriate error message
-      console.error(err); // Log the error for debugging
-      return res
-        .status(500)
-        .json({ message: "An error occurred while creating the forum." });
-    }
-    // Success message
-    return res.status(200).json({ message: "Forum created successfully." });
-  });
-});
+        // Using prepared statement for security
+        pool.query(
+            'INSERT INTO Forum (title, creationDate, creatorID, adminID) VALUES (?, ?, ?, ?)',
+            [title, creationDate, creatorID, randomAdmin],
+            (err, result) => {
+                if (err) {
+                    console.error('Error creating forum:', err);
+                    return res.status(500).json({ error: 'Failed to create forum' });
+                }
+                // Assuming the forumID is an auto-increment field
+                const forumID = result.insertId;
+                res.json({ forumID: forumID, message: 'Forum created successfully' });
+            }
+        );
+    });
