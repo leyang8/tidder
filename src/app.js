@@ -274,13 +274,85 @@ app.route("/api/profile/:userID").get((req, res) => {
         console.error(err);
         return res.status(500).json({ error: "Internal Server Error" });
       }
-
-      const followersUsernames = result.map((row) => row.username);
+ const followersUsernames = result.map((row) => row.username);
       console.log(followersUsernames);
       res.json(followersUsernames);
     }
   );
 });
+
+//Route for finding the list of people the user is following
+app.route('/api/profile/following/:userID')
+  .get((req, res) => {
+    const userID = req.params.userID;
+
+    pool.query(
+      `SELECT U.username
+      FROM User U
+      JOIN Followship F ON U.userID = F.followeeUserID
+      WHERE F.followerUserID = ?;`,
+      [userID],
+      (err, result, fields) => {
+        if (err) {
+          console.error(err);
+          return res.status(500).json({ error: 'Internal Server Error' });
+        }
+
+        const followingsUsernames = result.map((row) => row.username);
+        console.log(followingsUsernames)
+        res.json(followingsUsernames);
+      }
+    );
+  });
+
+//Route for finding all the forums a user has created
+app.route('/api/profile/forumCreated/:userID')
+  .get((req, res) => {
+    const userID = req.params.userID;
+
+    pool.query(
+      `SELECT F.title
+      FROM Forum F
+      WHERE F.creatorID = ?`,
+      [userID],
+      (err, result, fields) => {
+        if (err) {
+          console.error(err);
+          return res.status(500).json({ error: 'Internal Server Error' });
+        }
+
+        const forumTitles = result.map((row) => row.title);
+        console.log(forumTitles);
+        res.json(forumTitles);
+      }
+    );
+  });
+
+//Route for Finding Reaction Notifications
+app.route('/api/profile/reaction/:userID')
+  .get((req, res) => {
+    const currentUserID = req.params.userID;
+
+    pool.query(
+      `SELECT U.username AS likerUsername
+      FROM Reaction_Notification R
+      JOIN User U ON R.userID = U.userID
+      JOIN Comment C ON R.commentID = C.commentID
+      WHERE C.creatorID = ? AND R.receiverID = ?`,
+      [currentUserID, currentUserID],
+      (err, result, fields) => {
+        if (err) {
+          console.error(err);
+          return res.status(500).json({ error: 'Internal Server Error' });
+        }
+
+        const likerUsernames = result.map((row) => row.likerUsername);
+        console.log(likerUsernames);
+        res.json(likerUsernames);
+      }
+    );
+  });
+
 // POST route for login
 app.post("/api/login", (req, res) => {
   const { email, password } = req.body;
