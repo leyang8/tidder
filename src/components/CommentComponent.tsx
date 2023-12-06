@@ -20,7 +20,47 @@ const CommentComponent = ({commentData}: CommentComponentProps) => {
     const [isReactionLike, setIsReactionLike] = useState(true)
     const [likeColour, setLikeColour] = useState('black')
     const [dislikeColour, setDislikeColour] = useState('black')
-    
+    const [hasUserReacted, setHasUserReacted] = useState(false)
+
+    async function fetchHasUserReacted(){
+        const url = `http://localhost:5002/api/secure/comments/${Cookies.get("currentUserID")}/${commentData.commentID}/reacted`;
+        fetch(url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(responseData => {
+                console.log('GET successful:', responseData);
+                if(responseData == false){
+                    setHasUserReacted(false)
+                } else {
+                    
+                    console.log(responseData + " Reacted response data ")
+                    setHasUserReacted(true)
+                    if(responseData[0].isLike == 1){
+                        setLikeColour("red")
+                        setDislikeColour("black")
+                        setIsReactionLike(true)
+                    } else {
+                        setLikeColour("black")
+                        setDislikeColour("red")
+                        setIsReactionLike(false)
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                
+            });
+
+    }
     async function handleDelete(event: React.FormEvent){
         event.preventDefault()
         const url = `http://localhost:5002/api/secure/comments/delete`;
@@ -56,17 +96,16 @@ const CommentComponent = ({commentData}: CommentComponentProps) => {
     }
     async function submitLike(event: React.FormEvent){
         event.preventDefault()
-
+        
         setIsReactionLike(true)
         
         setLikeColour("red")
         setDislikeColour('black')
-            
-
         const url = `http://localhost:5002/api/secure/comments/${commentData.commentID}/reactions`;
         const data = {
             isLike: isReactionLike,
-            userID: userID
+            userID: userID,
+            alreadyReacted: hasUserReacted
         }
         fetch(url, {
             method: 'POST',
@@ -83,9 +122,12 @@ const CommentComponent = ({commentData}: CommentComponentProps) => {
             })
             .then(responseData => {
                 console.log('POST successful:', responseData);
-                if(isReactionLike){
-                    setLikeCount(likeCount + 1)
+                if(hasUserReacted){
+                    setDislikeCount(dislikeCount-1)
                 }
+                setLikeCount(likeCount + 1)
+                setHasUserReacted(true)
+                
             })
             .catch(error => {
                 console.error('Error:', error);
@@ -97,7 +139,7 @@ const CommentComponent = ({commentData}: CommentComponentProps) => {
     }
     async function submitDislike(event: React.FormEvent){
         event.preventDefault()
-
+        
         setIsReactionLike(false)
         setLikeColour('black')
         setDislikeColour('red')
@@ -105,7 +147,8 @@ const CommentComponent = ({commentData}: CommentComponentProps) => {
         const url = `http://localhost:5002/api/secure/comments/${commentData.commentID}/reactions`;
         const data = {
             isLike: isReactionLike,
-            userID: userID
+            userID: userID,
+            alreadyReacted: hasUserReacted
         }
         fetch(url, {
             method: 'POST',
@@ -122,9 +165,14 @@ const CommentComponent = ({commentData}: CommentComponentProps) => {
             })
             .then(responseData => {
                 console.log('POST successful:', responseData);
-                if(isReactionLike){
-                    setDislikeCount(dislikeCount + 1)
+                if(hasUserReacted){
+                    setLikeCount(likeCount-1)
                 }
+                setHasUserReacted(true)
+                setDislikeCount(dislikeCount+1)
+                
+
+                
             })
             .catch(error => {
                 console.error('Error:', error);
@@ -261,6 +309,7 @@ const CommentComponent = ({commentData}: CommentComponentProps) => {
         }  
         fetchAuthorName()
         fetchReactions()
+        fetchHasUserReacted()
         fetchChildrenComments()
         setShowAlert(false)
 
@@ -276,11 +325,11 @@ const CommentComponent = ({commentData}: CommentComponentProps) => {
         </div>
         <p className='mb-5'>{commentData.content}</p>
         <div className="flex flex-wrap gap-2">
-        <FiHeart size={28} color={likeColour} onClick={submitLike}/>
+        <FiHeart size={28} color={likeColour} onClick={!(hasUserReacted && isReactionLike) ? submitLike : null}/>
         <Label>{likeCount}</Label>
         </div>
         <div className="flex flex-wrap gap-2">
-        <FaPoo size={28} color={dislikeColour} onClick={submitDislike}/>
+        <FaPoo size={28} color={dislikeColour} onClick={!(hasUserReacted && !isReactionLike) ? submitDislike : null}/>
         <Label>{dislikeCount}</Label>
         </div>
 

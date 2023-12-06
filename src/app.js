@@ -236,15 +236,39 @@ app.route("/api/secure/forums/:forumID/comments")
             res.json(results);
           }
         }
-      }
     );
   });
+// Tells if the user has already reacted to a comment
+app.route("/api/secure/comments/:id/:commentID/reacted")
+  .get(async (req, res) => {
+      const userID = req.params.id;
+      const commentID = req.params.commentID;
+      pool.query(
+        `SELECT * FROM Reaction WHERE commentID = ? AND userID = ?`,
+        [commentID, userID],
+        (err, result, fields) => {
+          if (err) {
+            return res.status(404).json({ error: "No reactions for comment" });
+          } else {
+            console.log(result)
+            if(!result[0]){
+              res.json(false);
+            } else {
+              res.json(result)
+            }
+            
+          }
+        }
+      );
+  })
+
 
 app.route('/api/secure/comments/:id/reactions')
     .get(async (req, res) => {
       const commentID = req.params.id;
       var likeResults = 0
       var dislikeResults = 0
+      
       pool.query(
         `SELECT * FROM Reaction WHERE commentID = ?`,
         [commentID],
@@ -252,7 +276,8 @@ app.route('/api/secure/comments/:id/reactions')
           if (err) {
             return res.status(404).json({ error: "No reactions for comment" });
           } else {
-            // Assuming result is an array, you may need to adjust accordingly
+            
+            
             result.forEach((result) => {
               console.log(result)
               if(result.isLike==1){
@@ -268,22 +293,46 @@ app.route('/api/secure/comments/:id/reactions')
 
 
     })
-    .post(async (req,res) => {
+    .post(async (req, res) => {
       const commentID = req.params.id;
-      var isLike = req.body.isLike
-      var userID = req.body.userID
-      pool.query(
-        `INSERT INTO Reaction (isLike, userID, commentID) VALUES (?, ?, ?)`,
-        [isLike, userID, commentID],
-        (err, result, fields) => {
-          if (err) {
-            return res.status(404).json({ error: "No reactions for comment" });
-          } else {
-            return res.status(201).json({ message: "Successful insert!" });
+      const isLike = req.body.isLike;
+      const userID = req.body.userID;
+      const alreadyReacted = req.body.alreadyReacted;
+      console.log(alreadyReacted)
+      if(alreadyReacted == true) {
+        pool.query(
+          `UPDATE Reaction SET isLike = ? WHERE userID = ? AND commentID = ?`,
+          [isLike, userID, commentID],
+          (err, result, fields) => {
+            console.log(err)
+            console.log('reached')
+            if (err) {
+              
+              return res.status(500).json({ error: "Internal Server Error" });
+            } else {
+              if (result.affectedRows === 0) {
+                return res.status(404).json({ error: "No reactions updated" });
+              } else {
+                return res.status(200).json({ message: "Successful update!" });
+              }
+            }
           }
-        }
-      );
-    })
+        );
+      } else {
+        pool.query(
+          `INSERT INTO Reaction (isLike, userID, commentID) VALUES (?, ?, ?)`,
+          [isLike, userID, commentID],
+          (err, result, fields) => {
+            if (err) {
+              return res.status(500).json({ error: "Internal Server Error" });
+            } else {
+              return res.status(201).json({ message: "Successful insert!" });
+            }
+          }
+        );
+      }
+    });
+    
 
 
 app.route("/api/secure/comments/:commentID/children").get(async (req, res) => {
@@ -371,6 +420,8 @@ app.route("/api/profile/forumCreated/:userID").get((req, res) => {
     }
   );
 });
+
+
 
 //Route for Finding Reaction Notifications
 app.route("/api/profile/reaction/:userID").get((req, res) => {
