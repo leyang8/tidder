@@ -111,6 +111,8 @@ const CommentComponent = ({commentData}: CommentComponentProps) => {
                 console.log('GET successful:', responseData);
                 if(responseData == false){
                     setHasUserReacted(false)
+                    setLikeColour("black")
+                    setDislikeColour("black")
                 } else {
                     
                     console.log(responseData + " Reacted response data ")
@@ -119,11 +121,13 @@ const CommentComponent = ({commentData}: CommentComponentProps) => {
                         setLikeColour("red")
                         setDislikeColour("black")
                         setIsReactionLike(true)
-                    } else {
+                      
+                    } else if(responseData[0].isLike==0){
                         setLikeColour("black")
                         setDislikeColour("red")
                         setIsReactionLike(false)
-                    }
+                       
+                    } 
                 }
             })
             .catch(error => {
@@ -379,10 +383,13 @@ const CommentComponent = ({commentData}: CommentComponentProps) => {
             setUserID(currentUserID)
         }  
         fetchAuthorName()
-        fetchReactions()
-        fetchHasUserReacted()
+        
+        
         fetchChildrenComments()
+
+        fetchHasUserReacted()
         fetchUserFollows()
+        fetchReactions()
         setShowAlert(false)
     }, [commentData])
   return (
