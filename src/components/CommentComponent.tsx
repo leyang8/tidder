@@ -199,9 +199,7 @@ const CommentComponent = ({commentData}: CommentComponentProps) => {
                     />
                 </div>
                 <Button className="mt-5 transition-transform transform hover:scale-105" gradientDuoTone="redToYellow" type="submit">Submit</Button>
-                </form>
-
-                    
+                </form> 
     </Card>
   )
 }

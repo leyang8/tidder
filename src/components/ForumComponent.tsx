@@ -145,12 +145,14 @@ const ForumComponent = ({forumData}: ForumComponentProps) => {
         if (currentUserID) {
             setUserID(currentUserID)
         }  
+        console.log("adminQuery:" + adminQuery)
         if(adminQuery == 'true'){
             setIsAdmin('true')
         }
         fetchComments()
         fetchAuthorName()
         setShowAlert(false)
+        
     }, [forumData])
   return (
     <Card className = "max-w-5xl">
