@@ -74,6 +74,72 @@ const pool = createPool({
 const app = express();
 app.use(express.json()); // for parsing application/json
 app.use(cors());
+
+
+app.route('/api/secure/follows/:firstID/:secondID')
+  .get(async (req, res) => {
+    const firstID = req.params.firstID
+    const secondID = req.params.secondID
+    pool.query(
+      "SELECT * FROM Followship WHERE followerUserID = ? and followeeUserID = ?",
+      [firstID, secondID],
+      (err, result, fields) => {
+        if (err) {
+          return res.status(404).json({ error: "No user in the database" });
+        } else {
+          console.log(result);
+          // Assuming result is an array, you may need to adjust accordingly
+          if(!result[0]){
+            res.json(false);
+            
+          } else {
+            res.json(true);
+          }
+          
+          
+        }
+      }
+    );
+  })
+  .post(async (req,res) => {
+    const firstID = req.params.firstID
+    const secondID = req.params.secondID
+    const creationDate = Math.floor(new Date().getTime() / 1000);
+    const follow = req.body.follow
+    if(follow){
+    pool.query(
+      "INSERT INTO Followship (followerUserID, followeeUserID, creationDate) VALUES (?, ?, ?)",
+      [firstID, secondID, creationDate],
+      (err, result, fields) => {
+        if (err) {
+          console.log(err)
+          return res.status(404).json({ error: "No user in the database" });
+        } else {
+          console.log(result);
+          // Assuming result is an array, you may need to adjust accordingly
+          res.json(1)
+        }
+      }
+    );
+    } else {
+      pool.query(
+        "DELETE FROM Followship WHERE followerUserID = ? AND followeeUserID = ?",
+        [firstID, secondID],
+        (err, result, fields) => {
+          if (err) {
+            return res.status(404).json({ error: "No user in the database" });
+          } else {
+            console.log(result);
+            // Assuming result is an array, you may need to adjust accordingly
+            res.json(0)
+           
+          }
+        }
+      );
+
+    }
+  })
+
 app.route("/api/secure/comments/delete").delete((req, res) => {
   const commentID = req.body.commentID;
   pool.query(
