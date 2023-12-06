@@ -5,6 +5,9 @@ import Cookies from "js-cookie";
 const Profile = () => {
   const [currentUserID, setCurrentUserID] = useState<any>("");
   const [followers, setFollowers] = useState<any[]>([]);
+  const [followings, setFollowings] = useState<any[]>([]);
+  const [forums, setForums] = useState<any[]>([]);
+  const [reactions, setReactions] = useState<any[]>([]);
 
   const fetchFollowerList = async (userID: number) => {
     try {
@@ -33,6 +36,95 @@ const Profile = () => {
     }
   };
 
+  const fetchFollowingList = async (userID: number) => {
+    try {
+      const response = await fetch(`http://localhost:5002/api/profile/following/${userID}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(responseData => {
+            console.log('GET successful:', responseData);
+            setFollowings(responseData)
+            
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            
+        }); 
+      
+      
+  } catch (error) {
+      console.error('Error fetching current user ID:', error);
+    }
+  };
+
+  const fetchForumList = async (userID: number) => {
+    try {
+      const response = await fetch(`http://localhost:5002/api/profile/forumCreated/${userID}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(responseData => {
+            console.log('GET successful:', responseData);
+            setForums(responseData)
+            
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            
+        }); 
+      
+      
+  } catch (error) {
+      console.error('Error fetching current user ID:', error);
+    }
+  };
+
+  const fetchReactionList = async (userID: number) => {
+    try {
+      const response = await fetch(`http://localhost:5002/api/profile/reaction/${userID}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(responseData => {
+            console.log('GET successful:', responseData);
+            setReactions(responseData)
+            
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            
+        }); 
+      
+      
+  } catch (error) {
+      console.error('Error fetching current user ID:', error);
+    }
+  };
   useEffect(() => {
     const currentUserID = Cookies.get("currentUserID");
     if (currentUserID) {
@@ -41,6 +133,9 @@ const Profile = () => {
 
     //Pass in the current user ID to fetch the list of followers
     fetchFollowerList(Number(currentUserID));
+    fetchFollowingList(Number(currentUserID));
+    fetchForumList(Number(currentUserID));
+    fetchReactionList(Number(currentUserID));
 
     // Assuming you have a function to get the current user ID, replace this with your logic
   }, []);
@@ -55,6 +150,34 @@ const Profile = () => {
           </li>
         ))}
       </ul>
+
+      <ul className="list-inside space-y-2">
+        {followings.map((following, index) => (
+          <li key={index}>
+            <div className="text-teal-600"> You are following {following}</div>
+            {/* Add other details you want to display */}
+          </li>
+        ))}
+      </ul>
+
+      <ul className="list-inside space-y-2">
+        {forums.map((forum, index) => (
+          <li key={index}>
+            <div className="text-teal-600">You created forum titled {forum}</div>
+            {/* Add other details you want to display */}
+          </li>
+        ))}
+      </ul>
+
+      <ul className="list-inside space-y-2">
+        {reactions.map((reaction, index) => (
+          <li key={index}>
+            <div className="text-teal-600">{reaction} liked your comment</div>
+            {/* Add other details you want to display */}
+          </li>
+        ))}
+      </ul>
+
     </div>
     //<div>Profile</div>
     /* <head>

@@ -281,7 +281,7 @@ app.route("/api/profile/:userID").get((req, res) => {
   );
 });
 
-//Route for finding the list of people the user is following
+//Route for profile following list
 app.route('/api/profile/following/:userID')
   .get((req, res) => {
     const userID = req.params.userID;
