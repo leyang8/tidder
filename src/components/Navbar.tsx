@@ -64,7 +64,7 @@ const Navbar = () => {
       <nav className="mt-3 bg-blue-300 max-w-[1440px] mx-auto flex justify-between items-center rounded-2xl sm:px-16 px-6 py-4">
         <Link href="/" className="flex justify-center items-center z-10">
           <Image
-            src="next.svg"
+            src="/tidderlogo.png"
             alt="logo"
             width={118}
             height={18}
