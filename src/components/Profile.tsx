@@ -163,10 +163,12 @@ const Profile = () => {
 
   return (
     <>
-      <section className="mt-10">
+      <section className="mt-20">
         <Card>
           <Card className="">
-            <div>User Profile</div>
+            <div>
+              <h2>User Profile</h2>
+            </div>
             <div className="userProfile">
               <h4>Username: {username}</h4>
               <hr />
@@ -215,23 +217,25 @@ const Profile = () => {
                 </Card>
               </div>
             </div>
+          </div>
 
-            <div>
-              <Card>
-                <h2>Your Forums</h2>
-                {forums.length !== 0 && (
-                  <div className="gap-2">
-                    {forums.map((forum, index) => (
-                      <Card key={index}> {forum} </Card>
-                    ))}
-                  </div>
-                )}
-                {forums.length === 0 && (
-                  <h5>You have not created any forums yet. Start posting!</h5>
-                )}
-              </Card>
-            </div>
+          <div className="text-teal-600">
+            <Card>
+              <h2>Your Forums</h2>
+              {forums.length !== 0 && (
+                <div className="gap-2">
+                  {forums.map((forum, index) => (
+                    <Card key={index}> {forum} </Card>
+                  ))}
+                </div>
+              )}
+              {forums.length === 0 && (
+                <h5>You have not created any forums yet. Start posting!</h5>
+              )}
+            </Card>
+          </div>
 
+          <div className="text-teal-600">
             <Card>
               <h2>Reactions</h2>
               {reactions.length !== 0 && (

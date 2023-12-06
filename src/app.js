@@ -462,7 +462,6 @@ app.route("/api/profile/userInfo/:userID").get((req, res) => {
         console.error(err);
         return res.status(500).json({ error: "Internal Server Error" });
       }
-      console.log(result[0]);
       res.json(result[0]);
     }
   );
