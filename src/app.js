@@ -333,15 +333,14 @@ app.route('/api/profile/forumCreated/:userID')
 //Route for Finding Reaction Notifications
 app.route('/api/profile/reaction/:userID')
   .get((req, res) => {
-    const currentUserID = req.params.userID;
+    const currentUserID = req.params.currentUserID;
 
     pool.query(
       `SELECT U.username AS likerUsername
       FROM Reaction_Notification R
       JOIN User U ON R.userID = U.userID
-      JOIN Comment C ON R.commentID = C.commentID
-      WHERE C.creatorID = ? AND R.receiverID = ?`,
-      [currentUserID, currentUserID],
+      WHERE R.receiverID = ?`,
+      [userID],
       (err, result, fields) => {
         if (err) {
           console.error(err);
