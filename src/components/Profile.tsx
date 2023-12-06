@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import { Alert, Avatar, Button, Card, Label, TextInput } from "flowbite-react";
+import { EditProfileForm } from ".";
 
 const Profile = () => {
   const [currentUserID, setCurrentUserID] = useState<any>("");
@@ -9,7 +10,6 @@ const Profile = () => {
   const [followings, setFollowings] = useState<any[]>([]);
   const [forums, setForums] = useState<any[]>([]);
   const [reactions, setReactions] = useState<any[]>([]);
-  const [userInfo, setUserInfo] = useState<string[]>([]);
 
   const fetchFollowerList = async (userID: number) => {
     try {
@@ -112,30 +112,6 @@ const Profile = () => {
     }
   };
 
-  const fetchUserInfo = async (userID: number) => {
-    try {
-      const response = await fetch(
-        `http://localhost:5002/api/profile/userInfo/${userID}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-
-      const responseData = await response.json();
-      console.log("Result: ", responseData);
-      setUserInfo(responseData[0]);
-    } catch (error) {
-      console.error("Error fetching user info:", error);
-    }
-  };
-
   useEffect(() => {
     const userID = Cookies.get("currentUserID");
     if (userID) {
@@ -147,26 +123,25 @@ const Profile = () => {
     fetchFollowingList(Number(userID));
     fetchForumList(Number(userID));
     fetchReactionList(Number(userID));
-    fetchUserInfo(Number(userID));
 
     // Assuming you have a function to get the current user ID, replace this with your logic
   }, []);
 
   return (
     <>
-      <section className="mt-10">
+      <section className="mt-5">
         <Card className="">
-          <Card>
-            <div className="userProfile">
-              <h4>Username:</h4>
-              <h4>Password: </h4>
-              <h4>Full Name: </h4>
-              <h4>Phone Number: </h4>
-            </div>
-          </Card>
+          <div className="userProfile">
+            <h4>Username: </h4>
+            <h4>Password: </h4>
+            <h4>First Name: </h4>
+            <h4>Middle Name: </h4>
+            <h4>Last Name: </h4>
+            <h4>Phone Number: </h4>
+          </div>
           <div>
             <div className="text-teal-600 flex flex-wrap gap-2">
-              <Card>
+              <Card className="max-w-sm">
                 <h2>Following:</h2>
                 {followings.length !== 0 && (
                   <div className="gap-2">
@@ -182,6 +157,9 @@ const Profile = () => {
                   </h5>
                 )}
               </Card>
+
+
+
               <Card>
                 <h2>Followers:</h2>
                 {followers.length !== 0 && (
@@ -191,8 +169,8 @@ const Profile = () => {
                     ))}
                   </div>
                 )}
-                {followers.length === 0 && (
-                  <h5>No followers yet! Start posting your comments!</h5>
+                {followings.length === 0 && (
+                  <h5>No followers yet! Start post your comments!</h5>
                 )}
               </Card>
             </div>
@@ -212,21 +190,27 @@ const Profile = () => {
               <h5>You have not created any forums yet. Start posting!</h5>
             )}
 
-            {/* {reactions.length !== 0 ? (
+            {reactions.length !== 0 ? (
               <ul className="list-inside space-y-2">
                 {reactions.map((reaction, index) => (
                   <li key={index}>
                     <div className="text-teal-600">
                       {reaction} liked your comment
                     </div>
+                    {/* Add other details you want to display */}
                   </li>
                 ))}
               </ul>
             ) : (
               <h5>There're no one likes your comment yet! Try posting more!</h5>
-            )} */}
+            )}
           </div>
         </Card>
+      </section>
+      <section>
+      <Card>
+      <EditProfileForm></EditProfileForm>
+      </Card>
       </section>
     </>
     //<div>Profile</div>

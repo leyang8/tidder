@@ -2,6 +2,7 @@
 import CreateForum from "./CreateForum";
 import CustomButton from "./CustomButton";
 import Dashboard from "./Dashboard";
+import EditProfileForm from "./EditProfileForm";
 import ForumComponent from "./ForumComponent";
 import Login from "./Login";
 import Navbar from "./Navbar";
@@ -21,5 +22,6 @@ export {
     CreateForum,
     ForumComponent,
     Navbar,
-    CustomButton
+    CustomButton,
+    EditProfileForm
 }
