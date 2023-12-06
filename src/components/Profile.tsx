@@ -9,7 +9,12 @@ const Profile = () => {
   const [followings, setFollowings] = useState<any[]>([]);
   const [forums, setForums] = useState<any[]>([]);
   const [reactions, setReactions] = useState<any[]>([]);
-  const [userInfo, setUserInfo] = useState<string[]>([]);
+  const [username, setUsername] = useState<string>("");
+  const [firstName, setFirstName] = useState<string>("");
+  const [middleName, setMiddleName] = useState<string>("");
+  const [lastName, setLastName] = useState<string>("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [email, setEmail] = useState<string>("");
 
   const fetchFollowerList = async (userID: number) => {
     try {
@@ -129,8 +134,12 @@ const Profile = () => {
       }
 
       const responseData = await response.json();
-      console.log("Result: ", responseData);
-      setUserInfo(responseData[0]);
+      setUsername(responseData.username);
+      setEmail(responseData.email);
+      setFirstName(responseData.firstName);
+      setMiddleName(responseData.middleName);
+      setLastName(responseData.lastName);
+      setPhoneNumber(responseData.phoneNumber);
     } catch (error) {
       console.error("Error fetching user info:", error);
     }
@@ -155,19 +164,26 @@ const Profile = () => {
   return (
     <>
       <section className="mt-10">
-        <Card className="">
-          <Card>
+        <Card>
+          <Card className="">
+            <div>User Profile</div>
             <div className="userProfile">
-              <h4>Username:</h4>
-              <h4>Password: </h4>
-              <h4>Full Name: </h4>
-              <h4>Phone Number: </h4>
+              <h4>Username: {username}</h4>
+              <hr />
+              <h4>Email: {email}</h4>
+              <hr />
+              <h4>
+                Full Name: {firstName} {middleName} {lastName}
+              </h4>
+              <hr />
+              <h4>Phone Number: {phoneNumber}</h4>
+              <hr />
             </div>
           </Card>
           <div>
             <div className="text-teal-600 flex flex-wrap gap-2">
               <Card>
-                <h2>Following:</h2>
+                <h2>Following</h2>
                 {followings.length !== 0 && (
                   <div className="gap-2">
                     {followings.map((following, index) => (
@@ -182,49 +198,53 @@ const Profile = () => {
                   </h5>
                 )}
               </Card>
+
+              <div>
+                <Card>
+                  <h2>Followers</h2>
+                  {followers.length !== 0 && (
+                    <div className="gap-2">
+                      {followers.map((follower, index) => (
+                        <Card key={index}>{follower}</Card>
+                      ))}
+                    </div>
+                  )}
+                  {followers.length === 0 && (
+                    <h5>No followers yet! Start posting your comments!</h5>
+                  )}
+                </Card>
+              </div>
+            </div>
+
+            <div>
               <Card>
-                <h2>Followers:</h2>
-                {followers.length !== 0 && (
+                <h2>Your Forums</h2>
+                {forums.length !== 0 && (
                   <div className="gap-2">
-                    {followers.map((follower, index) => (
-                      <Card key={index}>{follower}</Card>
+                    {forums.map((forum, index) => (
+                      <Card key={index}> {forum} </Card>
                     ))}
                   </div>
                 )}
-                {followers.length === 0 && (
-                  <h5>No followers yet! Start posting your comments!</h5>
+                {forums.length === 0 && (
+                  <h5>You have not created any forums yet. Start posting!</h5>
                 )}
               </Card>
             </div>
 
-            {forums.length !== 0 ? (
-              <ul className="list-inside space-y-2">
-                {forums.map((forum, index) => (
-                  <li key={index}>
-                    <div className="text-teal-600">
-                      You created forum titled {forum}
-                    </div>
-                    {/* Add other details you want to display */}
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <h5>You have not created any forums yet. Start posting!</h5>
-            )}
-
-            {/* {reactions.length !== 0 ? (
-              <ul className="list-inside space-y-2">
-                {reactions.map((reaction, index) => (
-                  <li key={index}>
-                    <div className="text-teal-600">
-                      {reaction} liked your comment
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <h5>There're no one likes your comment yet! Try posting more!</h5>
-            )} */}
+            <Card>
+              <h2>Reactions</h2>
+              {reactions.length !== 0 && (
+                <div className="gap-2">
+                  {reactions.map((reaction, index) => (
+                    <Card key={index}>{reaction}</Card>
+                  ))}
+                </div>
+              )}
+              {reactions.length === 0 && (
+                <h5>There're no reactions yet! Try posting more!</h5>
+              )}
+            </Card>
           </div>
         </Card>
       </section>
