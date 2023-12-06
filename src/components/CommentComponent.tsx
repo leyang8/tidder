@@ -103,7 +103,7 @@ const CommentComponent = ({commentData}: CommentComponentProps) => {
         setDislikeColour('black')
         const url = `http://localhost:5002/api/secure/comments/${commentData.commentID}/reactions`;
         const data = {
-            isLike: isReactionLike,
+            isLike: 1,
             userID: userID,
             alreadyReacted: hasUserReacted
         }
@@ -146,7 +146,7 @@ const CommentComponent = ({commentData}: CommentComponentProps) => {
         
         const url = `http://localhost:5002/api/secure/comments/${commentData.commentID}/reactions`;
         const data = {
-            isLike: isReactionLike,
+            isLike: 0,
             userID: userID,
             alreadyReacted: hasUserReacted
         }
