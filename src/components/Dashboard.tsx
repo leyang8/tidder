@@ -4,8 +4,10 @@ import React, { useEffect, useState } from 'react'
 import { ForumComponent } from '.';
 import { HiInformationCircle } from 'react-icons/hi';
 import Cookies from 'js-cookie';
+import { useRouter } from 'next/navigation';
 
 const Dashboard = () => {
+    const router = useRouter()
     const [forums, setForums] = useState([]);
     const [currentUsername, setCurrentUsername] = useState<string>("")
     const [forumQuery, setForumQuery] = useState('');
@@ -15,7 +17,6 @@ const Dashboard = () => {
     async function handleSubmit(event: React.FormEvent){
         event.preventDefault()
         const url = `http://localhost:5002/api/secure/forums/creator/${userQuery}`;
-   
         fetch(url, {
             method: 'GET',
             headers: {
@@ -55,27 +56,48 @@ const Dashboard = () => {
                 console.log('GET successful:', responseData);
                 setForums(responseData)
                 setShowAlert(false)
+            })
+            .catch(error => {
+                console.error('Error:', error);     
+            });
+        
+    }
 
+    async function fetchUserName(userID: any){
+        const url = `http://localhost:5002/api/secure/users/${userID}`;
+        fetch(url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(responseData => {
+                console.log('GET successful:', responseData);
+                setCurrentUsername(responseData)
                 
             })
             .catch(error => {
                 console.error('Error:', error);
                 
-                
             });
-        
-    }
 
-    const onLogout = () => {
-        Cookies.remove('currentUser');
-        window.location.href = '/'
     }
+    
     useEffect(() => {
         // Get the username from cookies
-        const current = Cookies.get("currentUser");
-        if (current) {
-            setCurrentUsername(current)
-        }
+        const currentUserID = Cookies.get("currentUserID");
+        if (currentUserID) {
+            fetchUserName(currentUserID)
+        } if(!currentUserID){
+            router.push('/login')
+            
+        }       
         fetchForums();
     }, [])
   return (
@@ -85,12 +107,12 @@ const Dashboard = () => {
             <h1 className="hero__title">
                 Tidder, Welcome! {currentUsername}
             </h1>
-            <button id='logoutBtn' onClick={onLogout}>Logout</button>
+            
         </div>
         <p>
             Welcome to Tidder! View or create forums below!
         </p>
-        <Button className="transition-transform transform hover:scale-105" gradientDuoTone="purpleToPink" href="/forum/create">Surprise me!</Button>
+        <Button className="transition-transform transform hover:scale-105 max-w-xl" gradientDuoTone="purpleToPink" href="/forum/create">Create Forum</Button>
 
         <form className="flex max-w-md flex-col gap-4 mt-10" onSubmit={handleSubmit}>
                 <div className="mb-2 block">
