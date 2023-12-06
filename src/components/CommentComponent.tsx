@@ -1,8 +1,9 @@
 "use client"
 import { CommentComponentProps } from '@/types'
-import { Accordion, Button, Card, Label, TextInput } from 'flowbite-react';
+import { Accordion, Alert, Avatar, Button, Card, Label, TextInput } from 'flowbite-react';
 import Cookies from 'js-cookie';
 import React, { useEffect, useState } from 'react'
+import { HiInformationCircle } from 'react-icons/hi';
 
 const CommentComponent = ({commentData}: CommentComponentProps) => {
     const [children, setChildren] = useState([]);
@@ -10,6 +11,8 @@ const CommentComponent = ({commentData}: CommentComponentProps) => {
     const [newReply, setNewReply] = useState('')
     const [userID, setUserID] = useState('')
     const [isAdmin, setIsAdmin] = useState('false')
+    const [showAlert, setShowAlert] = useState(false); // State to manage alert visibility
+    const [alertMessage, setAlertMessage] = useState('');
     async function handleDelete(event: React.FormEvent){
         event.preventDefault()
         const url = `http://localhost:5002/api/secure/comments/delete`;
@@ -31,6 +34,8 @@ const CommentComponent = ({commentData}: CommentComponentProps) => {
             })
             .then(responseData => {
                 console.log('DELETE successful:', responseData);
+                setAlertMessage("Comment deleted!")
+                setShowAlert(true)
                
                 
             })
@@ -95,6 +100,8 @@ const CommentComponent = ({commentData}: CommentComponentProps) => {
                 console.log('GET successful:', responseData);
                 setAuthorName(responseData)
                 
+           
+                
             })
             .catch(error => {
                 console.error('Error:', error);
@@ -141,13 +148,18 @@ const CommentComponent = ({commentData}: CommentComponentProps) => {
         }  
         fetchAuthorName()
         fetchChildrenComments()
+        setShowAlert(false)
 
     }, [commentData])
   return (
     <Card>
+        
+        <div className="flex flex-wrap gap-2">
         <h5 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
             @{authorName}
         </h5>
+        
+        </div>
         <p className='mb-10'>{commentData.content}</p>
 
         {(isAdmin == 'true') && 
@@ -156,7 +168,8 @@ const CommentComponent = ({commentData}: CommentComponentProps) => {
        
             <Label value="Admin Controls:" />
             
-            <Button className="mt-5 max-w-xl transition-transform transform hover:scale-105" color="failure" type="submit">Delete Comment</Button>
+            <Button className="mt-5 mb-5 max-w-xl transition-transform transform hover:scale-105" color="failure" type="submit">Delete Comment</Button>
+            {showAlert && <Alert color="success" icon={HiInformationCircle}>{alertMessage}</Alert>}
             </form>
             </Card>
         }
