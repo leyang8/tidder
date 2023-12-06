@@ -5,6 +5,8 @@ import React, { useEffect, useState } from 'react'
 import CommentComponent from './CommentComponent'
 import Cookies from 'js-cookie'
 import { HiInformationCircle } from 'react-icons/hi';
+import { SlUserFollow } from "react-icons/sl";
+import { SlUserFollowing } from "react-icons/sl";
 
 
 const ForumComponent = ({forumData}: ForumComponentProps) => {
@@ -15,7 +17,76 @@ const ForumComponent = ({forumData}: ForumComponentProps) => {
     const [userID, setUserID] = useState('')
     const [showAlert, setShowAlert] = useState(false); 
     const [alertMessage, setAlertMessage] = useState('');
- 
+    const [userFollows, setUserFollows] = useState(false)
+
+    async function submitFollow(event: React.FormEvent){
+        const url = `http://localhost:5002/api/secure/follows/${Cookies.get("currentUserID")}/${forumData.creatorID}`;
+        var data = {}
+        if(!userFollows){
+            data = {follow: true}
+        } else {
+            data = {follow: false}
+        }
+        
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(responseData => {
+                console.log('POST successful:', responseData);
+                if(responseData = 1){
+                    setUserFollows(true)
+                    fetchUserFollows()
+                } 
+
+                if(responseData=0){
+                    setUserFollows(false)
+                    fetchUserFollows()
+                }
+                
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                
+            });
+    }
+    async function fetchUserFollows(){
+        const url = `http://localhost:5002/api/secure/follows/${Cookies.get("currentUserID")}/${forumData.creatorID}`;
+        fetch(url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(responseData => {
+                console.log('GET successful:', responseData);
+                if(responseData == false){
+                    setUserFollows(false)
+                } else {
+                    setUserFollows(true)
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                
+            });
+
+    }
 
     async function handleDelete(event: React.FormEvent){
         event.preventDefault()
@@ -149,11 +220,12 @@ const ForumComponent = ({forumData}: ForumComponentProps) => {
         if(adminQuery == 'true'){
             setIsAdmin('true')
         }
+        fetchUserFollows()
         fetchComments()
         fetchAuthorName()
         setShowAlert(false)
         
-    }, [forumData])
+    }, [forumData, comments])
   return (
     <Card className = "max-w-5xl">
         <h5 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
@@ -161,7 +233,20 @@ const ForumComponent = ({forumData}: ForumComponentProps) => {
         </h5>
         <p>Created on: {new Date(forumData.creationDate).toLocaleString()}</p>
         <div className="flex flex-wrap gap-2">
-        <p>Created by @{authorName}</p>
+        <p></p>
+        <div className="flex flex-wrap gap-2">
+        <h5 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+            Created by @{authorName}
+        </h5>
+        { ((!userFollows) && String(forumData.creatorID)!=userID)&&
+        <SlUserFollow  size='25' onClick={submitFollow}/>
+        }
+        {(userFollows) && String(forumData.creatorID)!=userID &&
+        <SlUserFollowing  size='25' onClick={submitFollow} color="green"/>
+        }
+
+        
+        </div>
         
         </div>
         {isAdmin == 'true' && 

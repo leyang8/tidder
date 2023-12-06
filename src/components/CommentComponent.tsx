@@ -407,7 +407,6 @@ const CommentComponent = ({commentData}: CommentComponentProps) => {
         <SlUserFollowing  size='25' onClick={submitFollow} color="green"/>
         }
 
-
         
         </div>
         <p className='mb-5'>{commentData.content}</p>
