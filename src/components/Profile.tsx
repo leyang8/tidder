@@ -110,7 +110,6 @@ const Profile = () => {
       }
 
       const responseData = await response.json();
-      console.log("Result: ", responseData);
       setReactions(responseData);
     } catch (error) {
       console.error("Error fetching reactions:", error);
@@ -163,7 +162,7 @@ const Profile = () => {
 
   return (
     <>
-      <section className="mt-20">
+      <section className="position-absolute mt-20">
         <Card>
           <Card className="">
             <div>
@@ -241,7 +240,7 @@ const Profile = () => {
               {reactions.length !== 0 && (
                 <div className="gap-2">
                   {reactions.map((reaction, index) => (
-                    <Card key={index}>{reaction} liked your post</Card>
+                    <Card key={index}>{reaction} reacted your post</Card>
                   ))}
                 </div>
               )}
