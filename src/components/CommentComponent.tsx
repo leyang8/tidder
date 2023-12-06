@@ -202,6 +202,7 @@ const CommentComponent = ({commentData}: CommentComponentProps) => {
                 }
                 setLikeCount(likeCount + 1)
                 setHasUserReacted(true)
+                fetchReactions()
                 
             })
             .catch(error => {
@@ -246,7 +247,6 @@ const CommentComponent = ({commentData}: CommentComponentProps) => {
                 setHasUserReacted(true)
                 setDislikeCount(dislikeCount+1)
                 
-
                 
             })
             .catch(error => {
@@ -383,13 +383,11 @@ const CommentComponent = ({commentData}: CommentComponentProps) => {
             setUserID(currentUserID)
         }  
         fetchAuthorName()
-        
-        
-        fetchChildrenComments()
-
-        fetchHasUserReacted()
-        fetchUserFollows()
         fetchReactions()
+        fetchHasUserReacted()
+        fetchChildrenComments()
+        fetchUserFollows()
+        
         setShowAlert(false)
     }, [commentData])
   return (

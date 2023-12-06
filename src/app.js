@@ -376,6 +376,7 @@ app
         [isLike, userID, commentID],
         (err, result, fields) => {
           if (err) {
+            console.log(err)
             return res.status(500).json({ error: "Internal Server Error" });
           } else {
             return res.status(201).json({ message: "Successful insert!" });

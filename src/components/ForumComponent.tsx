@@ -225,7 +225,7 @@ const ForumComponent = ({forumData}: ForumComponentProps) => {
         fetchAuthorName()
         setShowAlert(false)
         
-    }, [forumData, comments])
+    }, [forumData])
   return (
     <Card className = "max-w-5xl">
         <h5 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
