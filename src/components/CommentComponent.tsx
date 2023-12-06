@@ -1,13 +1,82 @@
 "use client"
 import { CommentComponentProps } from '@/types'
-import { Accordion, Card, Label, TextInput } from 'flowbite-react';
-
+import { Accordion, Button, Card, Label, TextInput } from 'flowbite-react';
+import Cookies from 'js-cookie';
 import React, { useEffect, useState } from 'react'
 
 const CommentComponent = ({commentData}: CommentComponentProps) => {
     const [children, setChildren] = useState([]);
     const [authorName, setAuthorName] = useState('')
-    const [newReview, setNewReview] = useState('')
+    const [newReply, setNewReply] = useState('')
+    const [userID, setUserID] = useState('')
+    const [isAdmin, setIsAdmin] = useState('false')
+    async function handleDelete(event: React.FormEvent){
+        event.preventDefault()
+        const url = `http://localhost:5002/api/secure/comments/delete`;
+        const data = {
+            commentID: commentData.commentID
+        }
+        fetch(url, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(responseData => {
+                console.log('DELETE successful:', responseData);
+               
+                
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                
+            });
+
+
+    }
+    async function submitReply(event: React.FormEvent){
+        event.preventDefault()
+        const url = `http://localhost:5002/api/secure/comments/reply`;
+        const data = {
+            parentCommentID: commentData.commentID,
+            content: newReply,
+            creatorID: userID,
+            forumID: commentData.forumID
+        }
+
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(responseData => {
+                console.log('GET successful:', responseData);
+               
+                
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                
+            });
+
+
+
+    }
     async function fetchAuthorName(){
         const url = `http://localhost:5002/api/secure/users/${commentData.creatorID}`;
         fetch(url, {
@@ -61,17 +130,37 @@ const CommentComponent = ({commentData}: CommentComponentProps) => {
 
     }
     useEffect(() => {
+        const currentUserID = Cookies.get("currentUserID");
+        const adminQuery = Cookies.get("isAdmin");
+        
+        if(adminQuery == 'true'){
+            setIsAdmin('true')
+        }
+        if (currentUserID) {
+            setUserID(currentUserID)
+        }  
         fetchAuthorName()
         fetchChildrenComments()
 
-    }, [])
+    }, [commentData])
   return (
     <Card>
         <h5 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
             @{authorName}
         </h5>
         <p className='mb-10'>{commentData.content}</p>
-        
+
+        {(isAdmin == 'true') && 
+        <Card>
+            <form onSubmit={handleDelete}>
+       
+            <Label value="Admin Controls:" />
+            
+            <Button className="mt-5 max-w-xl transition-transform transform hover:scale-105" color="failure" type="submit">Delete Comment</Button>
+            </form>
+            </Card>
+        }
+        {children.length!==0 &&
         <Card>
         <h5 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
             Replies:
@@ -84,16 +173,20 @@ const CommentComponent = ({commentData}: CommentComponentProps) => {
                         ))}     
                         </div>
         </Card>
-        <div className="mb-2 block">
-                    <Label value="Leave a review!" />
+    }
+        <form onSubmit={submitReply}>
+            <div className="mb-2 block">
+                    <Label value="Leave a reply!" />
                     <TextInput
                         placeholder="Example: I agree!"
                         shadow
                         onChange={(e) => {
-                            setNewReview(e.target.value);
+                            setNewReply(e.target.value);
                         }}
                     />
                 </div>
+                <Button className="mt-5 transition-transform transform hover:scale-105" gradientDuoTone="redToYellow" type="submit">Submit</Button>
+                </form>
 
                     
     </Card>

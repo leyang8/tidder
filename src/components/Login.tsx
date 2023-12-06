@@ -1,3 +1,4 @@
+"use client";
 import React, { FormEvent, useState } from "react";
 import Cookies from "js-cookie";
 
@@ -7,58 +8,65 @@ const Login = () => {
 
   const routeToDashboard = () => {
     window.location.href = "/dashboard";
-  }
+  };
   const onLoginClick = async (e: FormEvent<HTMLButtonElement>) => {
     e.preventDefault();
     await loginHandler();
   };
 
   const loginHandler = async () => {
-    try { 
-      const response = await fetch('http://localhost:5002/api/login', {
-        method: 'POST',
+    try {
+      const response = await fetch("http://localhost:5002/api/login", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify({email, password})
+        body: JSON.stringify({ email, password }),
       });
 
       if (!response.ok) {
         const errorData = await response.json();
-        alert(errorData.message || 'Login failed, please try again!');
+        alert(errorData.message || "Login failed, please try again!");
         return;
       }
 
       const data = await response.json();
-      const currentUser = data.user
+      const currentUser = data.user;
       // Handle successful login (e.g., redirect, store user data)
-      Cookies.set("currentUser", currentUser.username)
-      routeToDashboard()
+      Cookies.set("currentUserID", currentUser.userID);
+      Cookies.set("isAdmin", data.isAdmin);
+      routeToDashboard();
     } catch (error: any) {
-      alert('Login error: ' + error.message);
+      alert("Login error: " + error.message);
       // Handle login error (e.g., show error message)
     }
-};
-
+  };
 
   return (
     <>
-      <section>
-        <div className="form-box">
+      <section className="mt-5">
+        <div className="form-box mt-10">
           <div className="form-value">
             <form action="">
               <h2>Login</h2>
               <div className="inputbox">
-                <input 
-                type="email"
-                onChange={(e) => {setEmail(e.target.value)}}
-                required />
+                <input
+                  type="email"
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                  }}
+                  required
+                />
                 <label>Email</label>
               </div>
               <div className="inputbox">
-                <input type="password"
-                onChange={(e) => {setPassword(e.target.value)}}
-                required />
+                <input
+                  type="password"
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                  }}
+                  required
+                />
                 <label>Password</label>
               </div>
               <button onClick={onLoginClick}>Log in</button>

@@ -1,10 +1,63 @@
-import React from 'react'
-
+"use client";
+import React, { useEffect, useState } from "react";
+import Cookies from "js-cookie";
 
 const Profile = () => {
+  const [currentUserID, setCurrentUserID] = useState<any>("");
+  const [followers, setFollowers] = useState<any[]>([]);
+
+  const fetchFollowerList = async (userID: number) => {
+    try {
+      await fetch(`http://localhost:5002/api/profile/${userID}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+            // console.log("HTTP error! Status: ", response.status);
+          }
+          return response.json();
+        })
+        .then((responseData) => {
+          console.log("Followers:", responseData);
+          setFollowers(responseData);
+        })
+        .catch((error) => {
+          console.error("Error:", JSON.parse(error));
+        });
+    } catch (error) {
+      console.error("Error fetching current user ID:", error);
+    }
+  };
+
+  useEffect(() => {
+    const currentUserID = Cookies.get("currentUserID");
+    if (currentUserID) {
+      setCurrentUserID(currentUserID);
+    }
+
+    //Pass in the current user ID to fetch the list of followers
+    fetchFollowerList(Number(currentUserID));
+
+    // Assuming you have a function to get the current user ID, replace this with your logic
+  }, []);
+
   return (
+    <div>
+      <ul className="list-inside space-y-2">
+        {followers.map((follower, index) => (
+          <li key={index}>
+            <div className="text-teal-600">{follower}</div>
+            {/* Add other details you want to display */}
+          </li>
+        ))}
+      </ul>
+    </div>
     //<div>Profile</div>
-{/* <head>
+    /* <head>
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>Social Media App</title>
@@ -42,9 +95,8 @@ const Profile = () => {
 
   <!-- Add your scripts and other HTML content here -->
 
-</body> */}
-    
-  )
-}
+</body> */
+  );
+};
 
-export default Profile
+export default Profile;
