@@ -141,7 +141,7 @@ app.route('/api/secure/comments/reply')
 
 
 // Get username and profile pic off of userID
-app.route("/api/secure/users/:id").get((req, res) => {
+app.route("/api/secure/users/:id").get(async (req, res) => {
   const userID = req.params.id;
   var usernameResult = "";
 
@@ -162,7 +162,7 @@ app.route("/api/secure/users/:id").get((req, res) => {
 });
 
 app.route("/api/secure/forums/creator/:username")
-    .get((req, res) => {
+    .get(async (req, res) => {
         const username = req.params.username;
         const results = [];
 
@@ -189,7 +189,7 @@ app.route("/api/secure/forums/creator/:username")
     
 
 app.route("/api/secure/forums")
-    .get((req, res) => {
+    .get(async (req, res) => {
       const results = [];
       pool.query(
         "SELECT * FROM Forum ORDER BY RAND() LIMIT 6",
@@ -223,7 +223,7 @@ app.route("/api/secure/forums")
       );
     })
 app.route("/api/secure/forums/:forumID/comments")
-    .get((req, res) => {
+    .get(async (req, res) => {
       const results = [];
       const forumID = req.params.forumID;
 
@@ -242,7 +242,53 @@ app.route("/api/secure/forums/:forumID/comments")
       );
     })
 
-app.route("/api/secure/comments/:commentID/children").get((req, res) => {
+app.route('/api/secure/comments/:id/reactions')
+    .get(async (req, res) => {
+      const commentID = req.params.id;
+      var likeResults = 0
+      var dislikeResults = 0
+      pool.query(
+        `SELECT * FROM Reaction WHERE commentID = ?`,
+        [commentID],
+        (err, result, fields) => {
+          if (err) {
+            return res.status(404).json({ error: "No reactions for comment" });
+          } else {
+            // Assuming result is an array, you may need to adjust accordingly
+            result.forEach((result) => {
+              console.log(result)
+              if(result.isLike==1){
+                likeResults += 1
+              }else {
+                dislikeResults += 1
+              }
+            })
+            res.json({likes: likeResults, dislikes: dislikeResults});
+          }
+        }
+      );
+
+
+    })
+    .post(async (req,res) => {
+      const commentID = req.params.id;
+      var isLike = req.body.isLike
+      var userID = req.body.userID
+      pool.query(
+        `INSERT INTO Reaction (isLike, userID, commentID) VALUES (?, ?, ?)`,
+        [isLike, userID, commentID],
+        (err, result, fields) => {
+          if (err) {
+            return res.status(404).json({ error: "No reactions for comment" });
+          } else {
+            return res.status(201).json({ message: "Successful insert!" });
+          }
+        }
+      );
+    })
+
+
+app.route("/api/secure/comments/:commentID/children").get(async (req, res) => {
   const results = [];
   const commentID = req.params.commentID;
 
@@ -407,7 +453,7 @@ app.route('/api/profile/editProfile/:userID')
 
 
 // POST route for login
-app.post("/api/login", (req, res) => {
+app.post("/api/login", async (req, res) => {
   const { email, password } = req.body;
   pool.query(
     "SELECT * FROM User WHERE email = ?",
