@@ -12,6 +12,37 @@ const ForumComponent = ({forumData}: ForumComponentProps) => {
     const [isAdmin, setIsAdmin] = useState('false')
     const [newReply, setNewReply] = useState('')
     const [userID, setUserID] = useState('')
+    async function handleDelete(event: React.FormEvent){
+        event.preventDefault()
+        const url = `http://localhost:5002/api/secure/forums`;
+        const data = {
+            forumID: forumData.forumID
+        }
+        fetch(url, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(responseData => {
+                console.log('DELETE successful:', responseData);
+               
+                
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                
+            });
+
+
+    }
     async function submitReply(event: React.FormEvent){
         event.preventDefault()
         const url = `http://localhost:5002/api/secure/comments/new`;
@@ -121,7 +152,7 @@ const ForumComponent = ({forumData}: ForumComponentProps) => {
         <p>Created by @{authorName}</p>
         {isAdmin == 'true' && 
         <Card>
-            <form onSubmit={submitReply}>
+            <form onSubmit={handleDelete}>
        
             <Label value="Admin Controls:" />
             

@@ -6,9 +6,9 @@ const Profile = () => {
   const [currentUserID, setCurrentUserID] = useState<any>("");
   const [followers, setFollowers] = useState<any[]>([]);
 
-  const fetchFollowerList = async () => {
+  const fetchFollowerList = async (userID: number) => {
     try {
-      await fetch(`http://localhost:5002/api/profile/${currentUserID}`, {
+      await fetch(`http://localhost:5002/api/profile/${userID}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -16,8 +16,8 @@ const Profile = () => {
       })
         .then((response) => {
           if (!response.ok) {
-            // throw new Error(`HTTP error! Status: ${response.status}`);
-            console.log("HTTP error! Status: ", response.status);
+            throw new Error(`HTTP error! Status: ${response.status}`);
+            // console.log("HTTP error! Status: ", response.status);
           }
           return response.json();
         })
@@ -26,7 +26,7 @@ const Profile = () => {
           setFollowers(responseData);
         })
         .catch((error) => {
-          console.error("Error:", error);
+          console.error("Error:", JSON.parse(error));
         });
     } catch (error) {
       console.error("Error fetching current user ID:", error);
@@ -38,7 +38,9 @@ const Profile = () => {
     if (currentUserID) {
       setCurrentUserID(currentUserID);
     }
-    fetchFollowerList();
+
+    //Pass in the current user ID to fetch the list of followers
+    fetchFollowerList(Number(currentUserID));
 
     // Assuming you have a function to get the current user ID, replace this with your logic
   }, []);
@@ -48,7 +50,7 @@ const Profile = () => {
       <ul className="list-inside space-y-2">
         {followers.map((follower, index) => (
           <li key={index}>
-            <div className="text-teal-600">{follower.username}</div>
+            <div className="text-teal-600">{follower}</div>
             {/* Add other details you want to display */}
           </li>
         ))}
