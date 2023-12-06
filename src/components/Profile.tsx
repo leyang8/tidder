@@ -1,6 +1,9 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import Cookies from "js-cookie";
+import { Alert, Avatar, Button, Card, Label, TextInput } from 'flowbite-react'
+
+
 
 const Profile = () => {
   const [currentUserID, setCurrentUserID] = useState<any>("");
@@ -98,6 +101,7 @@ const fetchReactionList = async (userID: number) => {
       }
 
       const responseData = await response.json();
+      console.log("Result: ", responseData)
       setReactions(responseData);
 
   } catch (error) {
@@ -121,34 +125,52 @@ const fetchReactionList = async (userID: number) => {
   }, []);
 
   return (
+    <>
+    
+    <section className="mt-5">
     <div>
+      {followers.length !== 0 ? 
       <ul className="list-inside space-y-2">
-        {followers.map((follower, index) => (
-          <li key={index}>
-            <div className="text-teal-600">{follower}</div>
-            {/* Add other details you want to display */}
-          </li>
-        ))}
-      </ul>
-
+      {followers.map((follower, index) => (
+        <li key={index}>
+          <div className="text-teal-600">{follower}</div>
+          {/* Add other details you want to display */}
+        </li>
+      ))}
+    </ul>
+      
+      :
+      <h5>No followers yet! Start post your comments!</h5>}
+      
+      {followings.length !== 0 ? 
+    
       <ul className="list-inside space-y-2">
-        {followings.map((following, index) => (
-          <li key={index}>
-            <div className="text-teal-600"> You are following {following}</div>
-            {/* Add other details you want to display */}
-          </li>
-        ))}
-      </ul>
+      {followings.map((following, index) => (
+        <li key={index}>
+          <div className="text-teal-600"> You are following {following}</div>
+          {/* Add other details you want to display */}
+        </li>
+      ))}
+    </ul>
+      
+      :
+      <h5>You're not following others yet! Go see others posts and start following!</h5>}
+      
 
+      {forums.length!==0 ?
       <ul className="list-inside space-y-2">
-        {forums.map((forum, index) => (
-          <li key={index}>
-            <div className="text-teal-600">You created forum titled {forum}</div>
-            {/* Add other details you want to display */}
-          </li>
-        ))}
+      {forums.map((forum, index) => (
+        <li key={index}>
+          <div className="text-teal-600">You created forum titled {forum}</div>
+          {/* Add other details you want to display */}
+        </li>
+      ))}
       </ul>
-
+      :
+      <h5>You have not created any forums yet. Start posting!</h5>}
+      
+      
+      {reactions.length !== 0?
       <ul className="list-inside space-y-2">
         {reactions.map((reaction, index) => (
           <li key={index}>
@@ -157,8 +179,13 @@ const fetchReactionList = async (userID: number) => {
           </li>
         ))}
       </ul>
+      :
+      <h5>There're no one likes your comment yet! Try posting more!</h5>}
+      
 
     </div>
+    </section>
+    </>
     //<div>Profile</div>
     /* <head>
       <meta charset="UTF-8">
