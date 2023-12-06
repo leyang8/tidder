@@ -34,6 +34,7 @@ const Login = () => {
       const currentUser = data.user;
       // Handle successful login (e.g., redirect, store user data)
       Cookies.set("currentUserID", currentUser.userID);
+      console.log("setting admin to: " + data.isAdmin)
       Cookies.set("isAdmin", data.isAdmin);
       routeToDashboard();
     } catch (error: any) {

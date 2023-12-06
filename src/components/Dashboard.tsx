@@ -107,11 +107,11 @@ const Dashboard = () => {
     <div className="hero">
       <div className="flex-1 pt-36 padding-x">
         <div className="infoContainer">
-          <h1 className="hero__title">Tidder, Welcome! {currentUsername}</h1>
+          <h1 className="hero__title">Tidder</h1>
         </div>
-        <p>Welcome to Tidder! View or create forums below!</p>
+        <p>Welcome to Tidder, {currentUsername}! View or create forums below!</p>
         <Button
-          className="transition-transform transform hover:scale-105 max-w-xl"
+          className="mt-5 transition-transform transform hover:scale-105 max-w-md"
           gradientDuoTone="purpleToPink"
           href="/forum/create"
         >
