@@ -140,7 +140,7 @@ app.route('/api/secure/comments/reply')
     });
 
 
-// Get username off of userID
+// Get username and profile pic off of userID
 app.route("/api/secure/users/:id").get((req, res) => {
   const userID = req.params.id;
   var usernameResult = "";

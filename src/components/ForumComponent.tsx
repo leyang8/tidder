@@ -1,9 +1,10 @@
 "use client"
 import { ForumComponentProps } from '@/types'
-import { Button, Card, Label, TextInput } from 'flowbite-react'
+import { Alert, Avatar, Button, Card, Label, TextInput } from 'flowbite-react'
 import React, { useEffect, useState } from 'react'
 import CommentComponent from './CommentComponent'
 import Cookies from 'js-cookie'
+import { HiInformationCircle } from 'react-icons/hi';
 
 
 const ForumComponent = ({forumData}: ForumComponentProps) => {
@@ -12,6 +13,10 @@ const ForumComponent = ({forumData}: ForumComponentProps) => {
     const [isAdmin, setIsAdmin] = useState('false')
     const [newReply, setNewReply] = useState('')
     const [userID, setUserID] = useState('')
+    const [showAlert, setShowAlert] = useState(false); 
+    const [alertMessage, setAlertMessage] = useState('');
+ 
+
     async function handleDelete(event: React.FormEvent){
         event.preventDefault()
         const url = `http://localhost:5002/api/secure/forums`;
@@ -33,7 +38,9 @@ const ForumComponent = ({forumData}: ForumComponentProps) => {
             })
             .then(responseData => {
                 console.log('DELETE successful:', responseData);
-               
+                setAlertMessage("Forum deleted!")
+                setShowAlert(true)
+                
                 
             })
             .catch(error => {
@@ -95,6 +102,7 @@ const ForumComponent = ({forumData}: ForumComponentProps) => {
             .then(responseData => {
                 console.log('GET successful:', responseData);
                 setAuthorName(responseData)
+            
             })
             .catch(error => {
                 console.error('Error:', error);
@@ -142,6 +150,7 @@ const ForumComponent = ({forumData}: ForumComponentProps) => {
         }
         fetchComments()
         fetchAuthorName()
+        setShowAlert(false)
     }, [forumData])
   return (
     <Card className = "max-w-5xl">
@@ -149,14 +158,18 @@ const ForumComponent = ({forumData}: ForumComponentProps) => {
             {forumData.title}
         </h5>
         <p>Created on: {new Date(forumData.creationDate).toLocaleString()}</p>
+        <div className="flex flex-wrap gap-2">
         <p>Created by @{authorName}</p>
+        
+        </div>
         {isAdmin == 'true' && 
         <Card>
             <form onSubmit={handleDelete}>
        
             <Label value="Admin Controls:" />
             
-            <Button className="mt-5 max-w-xl transition-transform transform hover:scale-105" color="failure" type="submit">Delete Forum</Button>
+            <Button className="mt-5 mb-5 max-w-xl transition-transform transform hover:scale-105" color="failure" type="submit">Delete Forum</Button>
+            {showAlert && <Alert color="success" icon={HiInformationCircle}>{alertMessage}</Alert>}
             </form>
             </Card>
         }
