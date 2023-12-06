@@ -25,7 +25,6 @@ const Profile = () => {
           return response.json();
         })
         .then((responseData) => {
-          console.log("Followers:", responseData);
           setFollowers(responseData);
         })
         .catch((error) => {
@@ -51,7 +50,6 @@ const Profile = () => {
             return response.json();
         })
         .then(responseData => {
-            console.log('GET successful:', responseData);
             setFollowings(responseData)
             
         })
@@ -59,8 +57,6 @@ const Profile = () => {
             console.error('Error:', error);
             
         }); 
-      
-      
   } catch (error) {
       console.error('Error fetching current user ID:', error);
     }
@@ -68,74 +64,58 @@ const Profile = () => {
 
   const fetchForumList = async (userID: number) => {
     try {
-      const response = await fetch(`http://localhost:5002/api/profile/forumCreated/${userID}`, {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-    })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-            return response.json();
-        })
-        .then(responseData => {
-            console.log('GET successful:', responseData);
-            setForums(responseData)
-            
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            
-        }); 
-      
-      
-  } catch (error) {
-      console.error('Error fetching current user ID:', error);
-    }
-  };
+        const response = await fetch(`http://localhost:5002/api/profile/forumCreated/${userID}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
 
-  const fetchReactionList = async (userID: number) => {
-    try {
-      const response = await fetch(`http://localhost:5002/api/profile/reaction/${userID}`, {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-    })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-            return response.json();
-        })
-        .then(responseData => {
-            console.log('GET successful:', responseData);
-            setReactions(responseData)
-            
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            
-        }); 
-      
-      
-  } catch (error) {
-      console.error('Error fetching current user ID:', error);
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const responseData = await response.json();
+        setForums(responseData);
+        
+    } catch (error) {
+        console.error('Error fetching forum list:', error);
     }
-  };
+};
+
+
+const fetchReactionList = async (userID: number) => {
+  try {
+      const response = await fetch(`http://localhost:5002/api/profile/reaction/${userID}`, {
+          method: 'GET',
+          headers: {
+              'Content-Type': 'application/json',
+          },
+      });
+
+      if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const responseData = await response.json();
+      setReactions(responseData);
+
+  } catch (error) {
+      console.error('Error fetching reactions:', error);
+  }
+};
+
   useEffect(() => {
-    const currentUserID = Cookies.get("currentUserID");
-    if (currentUserID) {
-      setCurrentUserID(currentUserID);
+    const userID = Cookies.get("currentUserID");
+    if (userID) {
+      setCurrentUserID(userID);
     }
 
     //Pass in the current user ID to fetch the list of followers
-    fetchFollowerList(Number(currentUserID));
-    fetchFollowingList(Number(currentUserID));
-    fetchForumList(Number(currentUserID));
-    fetchReactionList(Number(currentUserID));
+    fetchFollowerList(Number(userID));
+    fetchFollowingList(Number(userID));
+    fetchForumList(Number(userID));
+    fetchReactionList(Number(userID));
 
     // Assuming you have a function to get the current user ID, replace this with your logic
   }, []);

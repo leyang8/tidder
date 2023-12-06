@@ -8,8 +8,8 @@ const pool = createPool({
   host: "localhost",
   port: 3306,
   user: "root",
-  password: "rootuser",
-  database: "new_schema",
+  password: "Xingleyanglili12.",
+  database: "se3309",
   connectionLimit: 10,
 });
 
@@ -465,52 +465,53 @@ app.route("/api/profile/following/:userID").get((req, res) => {
   );
 });
 
-//Route for finding all the forums a user has created
+// Route for finding all the forums a user has created
 app.route("/api/profile/forumCreated/:userID").get((req, res) => {
-  const userID = req.params.userID;
-
-  pool.query(
-    `SELECT F.title
-      FROM Forum F
-      WHERE F.creatorID = ?`,
-    [userID],
-    (err, result, fields) => {
-      if (err) {
-        console.error(err);
-        return res.status(500).json({ error: "Internal Server Error" });
+    const userID = req.params.userID;
+    pool.query(
+      `SELECT title
+       FROM Forum
+       WHERE creatorID = ?`,
+      [userID],
+      (err, result, fields) => {
+        if (err) {
+          console.error(err);
+          return res.status(500).json({ error: "Internal Server Error" });
+        }
+  
+        const forumTitles = result.map((row) => row.title);
+        console.log(forumTitles);
+        res.json(forumTitles);
       }
-
-      const forumTitles = result.map((row) => row.title);
-      console.log(forumTitles);
-      res.json(forumTitles);
-    }
-  );
-});
+    );
+  });
+  
 
 
 
-//Route for Finding Reaction Notifications
+// Route for Finding Reaction Notifications
 app.route("/api/profile/reaction/:userID").get((req, res) => {
-  const userID = req.params.currentUserID;
-
-  pool.query(
-    `SELECT DISTINCT U.username
-      FROM Reaction_Notification R
-      JOIN User U ON R.userID = U.userID
-      WHERE R.receiverID = ?`,
-    [userID],
-    (err, result, fields) => {
-      if (err) {
-        console.error(err);
-        return res.status(500).json({ error: "Internal Server Error" });
+    const userID = req.params.userID;
+  
+    pool.query(
+      `SELECT DISTINCT U.username
+        FROM Reaction_Notification R
+        JOIN User U ON R.userID = U.userID
+        WHERE R.receiverID = ?`,
+      [userID],
+      (err, result, fields) => {
+        if (err) {
+          console.error(err);
+          return res.status(500).json({ error: "Internal Server Error" });
+        }
+  
+        const likerUsernames = result.map((row) => row.username);
+        console.log(likerUsernames);
+        res.json(likerUsernames);
       }
-
-      const likerUsernames = result.map((row) => row.likerUsername);
-      console.log(likerUsernames);
-      res.json(likerUsernames);
-    }
-  );
-});
+    );
+  });
+  
 
 //Post Route for Edit Profile
 app.route("/api/profile/editProfile/:userID").post((req, res) => {
