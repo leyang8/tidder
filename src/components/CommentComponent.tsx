@@ -10,6 +10,37 @@ const CommentComponent = ({commentData}: CommentComponentProps) => {
     const [newReply, setNewReply] = useState('')
     const [userID, setUserID] = useState('')
     const [isAdmin, setIsAdmin] = useState('false')
+    async function handleDelete(event: React.FormEvent){
+        event.preventDefault()
+        const url = `http://localhost:5002/api/secure/comments/delete`;
+        const data = {
+            commentID: commentData.commentID
+        }
+        fetch(url, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(responseData => {
+                console.log('DELETE successful:', responseData);
+               
+                
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                
+            });
+
+
+    }
     async function submitReply(event: React.FormEvent){
         event.preventDefault()
         const url = `http://localhost:5002/api/secure/comments/reply`;
@@ -121,7 +152,7 @@ const CommentComponent = ({commentData}: CommentComponentProps) => {
 
         {(isAdmin == 'true') && 
         <Card>
-            <form onSubmit={submitReply}>
+            <form onSubmit={handleDelete}>
        
             <Label value="Admin Controls:" />
             
