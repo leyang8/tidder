@@ -17,20 +17,12 @@ const EditProfileForm = () => {
   const [phoneNumber, setPhoneNumber] = useState("");  
   
 
-  const postData = {
-    username: username,
-    firstname: firstName,
-    middlename: middleName,
-    lastname: lastName,
-    email: email,
-    phoneNumber: phoneNumber,
-    password: password
-    
-  };
+  
 
   //Function Clear FOrm????
 
   const getInformation = (userID: number) => {
+    
     try {
     fetch(
       `http://localhost:5002/api/profile/userInfo/${userID}`,
@@ -66,18 +58,9 @@ const EditProfileForm = () => {
   }
 
 
-  const updateProfile = (userID: number) => {
-    fetch(`http://localhost:5002/api/profile/editProfile/${userID}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(postData),
-    })
-      .then((res) => res.json())
-      .then((data) => console.log(data.message))
-      .catch((err) => console.log(err));
-  };
+
+    
+   
 
   function onClickSave(e: FormEvent<HTMLButtonElement>){
     e.preventDefault();
@@ -85,12 +68,13 @@ const EditProfileForm = () => {
   }
 
   const editProfile = async () => {
+   
     
     // Assuming `userID` is available in the component and is the ID of the user being edited
     const userID = currentUserID;
   
     const userInfo = {
-      userId: userID,
+      userID: userID,
       email: email,
       username: username,
       password: password,
@@ -114,6 +98,7 @@ const EditProfileForm = () => {
       }
   
       const result = await response.json();
+      window.location.reload()
       console.log(result.message); // Or handle this message in the UI
       // Here you might want to navigate the user away from the edit page or refresh the user data
     } catch (error) {

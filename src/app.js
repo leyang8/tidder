@@ -531,22 +531,19 @@ app.route("/api/profile/reaction/:userID").get((req, res) => {
 });
 
 // Post Route for Edit Profile
-app.route("/api/profile/editProfile").post((req, res) => {
-    const {
-        userID,
-        firstName,
-        middleName,
-        lastName,
-        username,
-        email,
-        phoneNumber,
-        password, // This should be hashed in a real application
-    } = req.body;
+app.route("/api/profile/editProfile")
+.post((req, res) => {
+    const userID = req.body.userID
+    const firstName = req.body.firstName
+    const lastName = req.body.lastName
+    const middleName = req.body.middleName
+    const email = req.body.email
+    const password = req.body.password
+    const username = req.body.username
+    const phoneNumber = req.body.phoneNumber
   
     console.log("set profile body",req.body)
     // Validation and sanitation of input data should be performed here
-  
-    // Construct the SQL query
     const sql = `
       UPDATE User
       SET
@@ -573,7 +570,9 @@ app.route("/api/profile/editProfile").post((req, res) => {
         password, // The unhashed password is used here for the sake of this example
         userID,
         ],
-        (err) => { // Removed result since it's not being used
+        (err, result, fields) => { 
+          
+        // Removed result since it's not being used
         if (err) {
             console.error(err);
             return res.status(500).json({ error: "Internal Server Error" });
