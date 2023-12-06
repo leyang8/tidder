@@ -9,6 +9,7 @@ import Cookies from 'js-cookie'
 const ForumComponent = ({forumData}: ForumComponentProps) => {
     const [comments, setComments] = useState([])
     const [authorName, setAuthorName] = useState('')
+    const [isAdmin, setIsAdmin] = useState('false')
     const [newReply, setNewReply] = useState('')
     const [userID, setUserID] = useState('')
     async function submitReply(event: React.FormEvent){
@@ -101,9 +102,13 @@ const ForumComponent = ({forumData}: ForumComponentProps) => {
 
     useEffect(() => {
         const currentUserID = Cookies.get("currentUserID");
+        const adminQuery = Cookies.get("isAdmin");
         if (currentUserID) {
             setUserID(currentUserID)
         }  
+        if(adminQuery == 'true'){
+            setIsAdmin('true')
+        }
         fetchComments()
         fetchAuthorName()
     }, [forumData])
@@ -114,10 +119,19 @@ const ForumComponent = ({forumData}: ForumComponentProps) => {
         </h5>
         <p>Created on: {new Date(forumData.creationDate).toLocaleString()}</p>
         <p>Created by @{authorName}</p>
-
+        {isAdmin == 'true' && 
+        <Card>
+            <form onSubmit={submitReply}>
+       
+            <Label value="Admin Controls:" />
+            
+            <Button className="mt-5 max-w-xl transition-transform transform hover:scale-105" color="failure" type="submit">Delete Forum</Button>
+            </form>
+            </Card>
+        }
         
         <Card>
-
+            
         <form onSubmit={submitReply}>
             <div className="mb-2 block">
                     <Label value="Leave a new comment" />
@@ -129,7 +143,7 @@ const ForumComponent = ({forumData}: ForumComponentProps) => {
                         }}
                     />
                 </div>
-                <Button className="mt-5 transition-transform transform hover:scale-105" gradientDuoTone="redToYellow" type="submit">Submit</Button>
+                <Button className="mt-5 max-w-xl transition-transform transform hover:scale-105" gradientDuoTone="redToYellow" type="submit">Submit</Button>
                 </form>
         <div className='results'>
         <h5 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
