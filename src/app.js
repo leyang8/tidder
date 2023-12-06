@@ -219,25 +219,27 @@ app.post("/api/register", (req, res) => {
 });
 
 
-app.post("/api/createForum", (req, res) => {
-    const { title, creationDate, creatorID } = req.body;
+app.route('/api/secure/createForum')
+    .post((req, res) => {
+        const { title, creatorID } = req.body;
 
-    // Select a random adminID between 1 and 5
-    const randomAdmin = Math.floor(Math.random() * 5) + 1; 
+        // Select a random adminID between 1 and 5
+        const randomAdmin = Math.floor(Math.random() * 5) + 1; 
+        const creationDate = 1701822493;
 
-    // Using prepared statement for security
-    const query = 'INSERT INTO Forum (title, creationDate, creatorID, adminID) VALUES (?, ?, ?, ?)';
-    const values = [title, creationDate, creatorID, randomAdmin];
-
-    pool.query(query, values, (err, result, fields) => {
-        if (err) {
-            // Return a more appropriate error message
-            console.error(err); // Log the error for debugging
-            return res.status(500).json({ message: "An error occurred while creating the forum." });
-        }
-        // Success message
-        return res.status(200).json({ message: "Forum created successfully." });
+        // Using prepared statement for security
+        pool.query(
+            `INSERT INTO Forum (title, creationDate, creatorID, adminID) VALUES ('${title}', '${creationDate}' , '${creatorID}' , '${randomAdmin}')`,
+            [],
+            (err, result, field) => {
+                if (err) {
+                    console.error('Error creating forum:', err);
+                    return res.status(500).json({ error: 'Failed to create forum' });
+                }
+                // Assuming the forumID is an auto-increment field
+                const forumID = result.insertId;
+                res.json({ forumID: forumID, message: 'Forum created successfully' });
+            }
+        );
     });
-});
-
 

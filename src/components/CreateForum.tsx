@@ -1,28 +1,53 @@
-// pages/createForumPage.js
-import React, { useState } from 'react';
+import { HTMLFormMethod } from '@remix-run/router';
+import React, { FormEvent, useState } from 'react';
+import Cookies from 'js-cookie';
 
-const CreateForumPage = () => {
+const CreateForum = () => {
     const [title, setTitle] = useState('');
     const [comment, setComment] = useState('');
 
-    const handleSubmit = async (event) => {
-        event.preventDefault();
-        const forumData = { title, comment };
+    const currentUser = Cookies.get("currentUserID")
 
-        // Post forum data to your API endpoint
-        const response = await fetch('/api/createForum', {
+    const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+
+        // Step 1: Create Forum
+        const forumData = { title: title, creatorID: currentUser }; // Replace with actual creator ID
+        let forumResponse = await fetch('http://localhost:5002/api/secure/createForum', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify(forumData),
         });
+        
+        if (forumResponse.ok) {
+            const forum = await forumResponse.json();
+            const forumId = forum.forumID;
 
-        if (response.ok) {
-            console.log('Forum created successfully');
-            // Handle success, e.g., redirect to another page or show success message
+            // Step 2: Post Initial Comment
+            const commentData = {
+                forumID: forumId, 
+                content: comment,
+                creatorID: currentUser, // Replace with actual creator ID
+            };
+            let commentResponse = await fetch('http://localhost:5002/api/secure/comments/new', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(commentData),
+            });
+            console.log(await commentResponse.json())
+            if (commentResponse.ok) {
+                alert('Forum and initial comment created successfully');
+                // Handle success, e.g., redirect or show success message
+            } else {
+                alert('Failed to add initial comment');
+                // Handle error, e.g., show error message
+            }
         } else {
-            console.error('Failed to create forum');
+            alert('Failed to create forum');
             // Handle error, e.g., show error message
         }
     };
@@ -33,6 +58,9 @@ const CreateForumPage = () => {
                 <div className="space-y-12">
                     <div className="border-b border-gray-900/10 pb-12">
                         <h2 className="text-base font-semibold leading-7 text-gray-900">Create Forum</h2>
+                        <p className="mt-1 text-sm leading-6 text-gray-600">
+                            Share your thoughts or start a discussion.
+                        </p>
 
                         <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                             <div className="col-span-full">
@@ -56,7 +84,7 @@ const CreateForumPage = () => {
 
                             <div className="col-span-full">
                                 <label htmlFor="forum-content" className="block text-sm font-medium leading-6 text-gray-900">
-                                    Leave your first comment to lead the conversation
+                                    Content
                                 </label>
                                 <div className="mt-2">
                                     <textarea
@@ -91,4 +119,4 @@ const CreateForumPage = () => {
     );
 };
 
-export default CreateForumPage;
+export default CreateForum;
