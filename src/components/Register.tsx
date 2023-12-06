@@ -1,6 +1,7 @@
 "use client";
 import React, { FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Cookies from "js-cookie";
 
 const Register = () => {
   const router = useRouter();
@@ -62,6 +63,13 @@ const Register = () => {
       .then((data) => alert(data.message))
       .catch((err) => alert(err));
   };
+
+  useEffect(() => {
+    const userQuery = Cookies.get("currentUserID");
+    if (userQuery) {
+      window.location.href = "/dashboard";
+    }
+  }, []);
 
   return (
     <>
