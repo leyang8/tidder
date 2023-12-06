@@ -9,7 +9,7 @@ const pool = createPool({
   port: 3306,
   user: "root",
   password: "rootuser",
-  database: "new_schema",
+  database: "se3309_project",
   connectionLimit: 10,
 });
 
@@ -395,7 +395,7 @@ app
         [isLike, userID, commentID],
         (err, result, fields) => {
           if (err) {
-            console.log(err)
+            console.log(err);
             return res.status(500).json({ error: "Internal Server Error" });
           } else {
             return res.status(201).json({ message: "Successful insert!" });
